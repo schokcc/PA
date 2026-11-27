@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="TradeFlow" />
-  <title>TradeFlow v6.1</title>
+  <title>TradeFlow v6.2</title>
   <link id="app-icon-link" rel="apple-touch-icon" sizes="180x180" href="" />
   <link id="favicon-link" rel="icon" type="image/png" href="" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -93,16 +93,20 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       border-bottom: 1px solid var(--border);
     }
     .banner-warn { background-color: var(--warning-soft); color: var(--warning); }
     .banner-info { background-color: var(--accent-soft); color: var(--accent); }
     .top-banner button {
-      background: currentColor; border: none; padding: 3px 9px; border-radius: 6px;
+      background: currentColor; border: none; padding: 3px 8px; border-radius: 6px;
       font-size: 0.7rem; font-weight: 700; cursor: pointer; white-space: nowrap;
     }
     .top-banner button span { color: #ffffff; }
+    .top-banner button.ghost-btn {
+      background: transparent; border: 1px solid currentColor; padding: 2px 7px;
+    }
+    .top-banner button.ghost-btn span { color: inherit; }
 
     .top-header {
       position: sticky;
@@ -174,7 +178,7 @@
 
     .card-title {
       font-size: 0.86rem; font-weight: 700; color: var(--text-muted); margin-bottom: 10px;
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
     }
 
     .hero-balance { font-size: 1.85rem; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.5px; margin: 2px 0 4px; }
@@ -294,7 +298,6 @@
       background: var(--loan-soft); color: var(--loan); border-color: rgba(124, 58, 237, 0.3);
     }
 
-    /* 20x20 網格記事本樣式 */
     .note-toolbar {
       background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px;
       padding: 10px; margin-bottom: 10px; box-shadow: var(--shadow);
@@ -312,7 +315,7 @@
     }
     .note-mini-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
     .col-width-input {
-      width: 62px !important; padding: 3px 6px !important; font-size: 0.74rem !important;
+      width: 58px !important; padding: 3px 5px !important; font-size: 0.74rem !important;
       text-align: center; border-radius: 6px !important;
     }
 
@@ -417,6 +420,11 @@
     }
     input:focus, select:focus { border-color: var(--accent); }
 
+    .loan-split-box {
+      background: var(--loan-soft); border: 1px solid rgba(124, 58, 237, 0.3);
+      padding: 10px; border-radius: 10px; margin-bottom: 11px;
+    }
+
     .checkbox-row {
       display: flex; align-items: center; gap: 8px; background: var(--warning-soft);
       border: 1px solid rgba(217, 119, 6, 0.3); padding: 9px 11px; border-radius: 8px;
@@ -439,6 +447,14 @@
       padding: 4px 10px; border-radius: 999px; font-size: 0.74rem; font-weight: 600; cursor: pointer;
     }
 
+    .author-footer {
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      padding: 18px 0 8px;
+      letter-spacing: 0.3px;
+    }
+
     .hidden { display: none !important; }
     .empty-state { text-align: center; padding: 28px 16px; color: var(--text-muted); font-size: 0.84rem; }
   </style>
@@ -451,10 +467,13 @@
       <button onclick="exportJSON()"><span>立即備份</span></button>
     </div>
 
-    <!-- 主動式財務助理提醒橫幅 -->
+    <!-- 多條主動式財務助理提醒橫幅 -->
     <div id="assistant-banner" class="top-banner banner-info hidden">
-      <span id="assistant-banner-text">🔔 助理提醒</span>
-      <button onclick="handleAssistantAction()"><span>查看</span></button>
+      <span id="assistant-banner-text" style="flex:1; min-width:0;">🔔 助理提醒</span>
+      <div style="display:flex; gap:5px; flex-shrink:0;">
+        <button id="assistant-next-btn" class="ghost-btn hidden" onclick="cycleAssistantReminder()"><span>下一則 ›</span></button>
+        <button onclick="handleAssistantAction()"><span>查看</span></button>
+      </div>
     </div>
 
     <!-- 頂部固定導航 -->
@@ -474,12 +493,12 @@
             <path d="M40 20H50V30" stroke="#34D399" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
             <circle cx="14" cy="44" r="3.5" fill="#FBBF24"/>
           </svg>
-          <span>TradeFlow <span style="font-size:0.65rem; font-weight:700; color:var(--accent); background:var(--accent-soft); padding:1px 5px; border-radius:4px;">v6.1</span></span>
+          <span>TradeFlow <span style="font-size:0.65rem; font-weight:700; color:var(--accent); background:var(--accent-soft); padding:1px 5px; border-radius:4px;">v6.2</span></span>
         </div>
         <div class="header-btns">
           <button class="icon-btn" id="privacy-btn" onclick="togglePrivacy()" title="私隱遮罩">👁️</button>
           <button class="icon-btn" id="theme-toggle-btn" onclick="toggleTheme()">🌙</button>
-          <button class="icon-btn" onclick="openModal('backup')">設定</button>
+          <button class="icon-btn" onclick="openModal('backup')">設定 / 備份</button>
         </div>
       </div>
 
@@ -570,10 +589,13 @@
           </div>
         </div>
 
-        <!-- 1-3：純利潤與分析 -->
+        <!-- 1-3：純利潤與分析（含券商戶口篩選） -->
         <div id="sub-report-pnl" class="sub-view hidden">
           <div class="card">
-            <div class="card-title"><span>💹 累計純利潤線 (HKD · 排除出入金)</span></div>
+            <div class="card-title">
+              <span>💹 累計純利潤線 (HKD)</span>
+              <select id="pnl-broker-filter" onchange="renderCharts()" style="width:auto; padding:3px 22px 3px 8px; font-size:0.74rem;"></select>
+            </div>
             <div class="chart-box" style="height:215px;"><canvas id="purePnlChart"></canvas></div>
           </div>
           <div class="card">
@@ -607,7 +629,10 @@
             <div class="chart-box" style="height:210px;"><canvas id="monthlyCashflowChart"></canvas></div>
           </div>
           <div class="card">
-            <div class="card-title"><span>💼 券商總資金曲線 (折合 HKD)</span></div>
+            <div class="card-title">
+              <span>💼 券商資金曲線 (HKD)</span>
+              <select id="equity-broker-filter" onchange="renderCharts()" style="width:auto; padding:3px 22px 3px 8px; font-size:0.74rem;"></select>
+            </div>
             <div class="chart-box" style="height:200px;"><canvas id="brokerEquityChart"></canvas></div>
           </div>
           <div class="card">
@@ -616,7 +641,7 @@
           </div>
         </div>
 
-        <!-- 1-5：年度總結報告 -->
+        <!-- 1-5：年度總結報告（保留兩張獨立長條圖） -->
         <div id="sub-report-yearly" class="sub-view hidden">
           <div class="card">
             <div class="card-title">
@@ -647,35 +672,33 @@
         </div>
       </div>
 
-      <!-- ==================== 2. 戶口主頁籤 ==================== -->
+      <!-- ==================== 2. 戶口主頁籤（銀行與券商 / 信用卡及貸款 / 已封存） ==================== -->
       <div id="view-accounts" class="hidden">
-        <div id="sub-accounts-all" class="sub-view">
+        <!-- 2-1：銀行與券商 -->
+        <div id="sub-accounts-liquid" class="sub-view">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <span style="font-size:0.78rem; color:var(--text-muted);" id="rate-display-hint">匯率: 1 USD = 7.80 HKD</span>
             <div style="display:flex; gap:6px;">
-              <button class="icon-btn" id="btn-sort-accounts" onclick="toggleAccountSortMode()">↕️ 排序</button>
+              <button class="icon-btn" id="btn-sort-liquid" onclick="toggleAccountSortMode()">↕️ 排序</button>
               <button class="icon-btn" style="background:var(--accent); border-color:var(--accent); color:#fff;" onclick="openModal('account')">＋ 新增</button>
             </div>
           </div>
-          <div id="accounts-all-container"></div>
+          <div id="accounts-liquid-container"></div>
         </div>
 
-        <div id="sub-accounts-credit" class="sub-view hidden">
+        <!-- 2-2：信用卡及貸款 -->
+        <div id="sub-accounts-debt" class="sub-view hidden">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <span style="font-size:0.78rem; color:var(--text-muted);">月結單錨定、In-Transit 退款與一鍵找數</span>
-            <button class="icon-btn" style="background:var(--accent); border-color:var(--accent); color:#fff;" onclick="openModal('account')">＋ 新增信用卡</button>
+            <span style="font-size:0.78rem; color:var(--text-muted);">月結單錨定、貸款本息還款</span>
+            <div style="display:flex; gap:6px;">
+              <button class="icon-btn" id="btn-sort-debt" onclick="toggleAccountSortMode()">↕️ 排序</button>
+              <button class="icon-btn" style="background:var(--accent); border-color:var(--accent); color:#fff;" onclick="openModal('account')">＋ 新增</button>
+            </div>
           </div>
-          <div id="accounts-credit-container"></div>
+          <div id="accounts-debt-container"></div>
         </div>
 
-        <div id="sub-accounts-loan" class="sub-view hidden">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <span style="font-size:0.78rem; color:var(--text-muted);">私人貸款、按揭與分期還款進度</span>
-            <button class="icon-btn" style="background:var(--loan); border-color:var(--loan); color:#fff;" onclick="openModal('account')">＋ 新增貸款</button>
-          </div>
-          <div id="accounts-loan-container"></div>
-        </div>
-
+        <!-- 2-3：已封存 -->
         <div id="sub-accounts-archived" class="sub-view hidden">
           <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:12px;">已封存戶口不會出現在日常記帳選單中，但歷史報表與淨資產曲線會完整保留。</p>
           <div id="accounts-archived-container"></div>
@@ -728,7 +751,7 @@
           </div>
 
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <span style="font-size:0.78rem; color:var(--text-muted);">到期自動入賬，亦可隨時手動觸發</span>
+            <span style="font-size:0.78rem; color:var(--text-muted);">到期自動入賬，支援自動轉賬還卡數/供款</span>
             <button class="icon-btn" style="background:var(--accent); border-color:var(--accent); color:#fff;" onclick="openRecurringModal()">＋ 新增週期項目</button>
           </div>
           <div id="list-recurring-items"></div>
@@ -762,12 +785,13 @@
           </div>
 
           <div class="note-tool-row" style="padding-top:4px; border-top:1px solid var(--bg-surface-2);">
-            <div style="display:flex; gap:5px; align-items:center;">
-              <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">欄寬</span>
-              <input type="number" id="note-col-width-input" class="col-width-input" min="40" max="400" step="10" value="108" onchange="setCustomColWidth(this.value)" />
-              <span style="font-size:0.7rem; color:var(--text-muted);">px</span>
-            </div>
             <div style="display:flex; gap:4px; align-items:center;">
+              <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">欄寬</span>
+              <input type="number" id="note-col-width-input" class="col-width-input" min="40" max="400" step="5" value="108" oninput="previewCustomColWidth(this.value)" onchange="setCustomColWidth(this.value)" />
+              <span style="font-size:0.68rem; color:var(--text-muted);">px</span>
+              <button class="note-mini-btn" onclick="applyWidthToAllCols()" title="將此寬度套用至全部列">套用全表</button>
+            </div>
+            <div style="display:flex; gap:3px; align-items:center;">
               <button class="note-mini-btn" onclick="modGridSize('row', 1)">＋行</button>
               <button class="note-mini-btn" onclick="modGridSize('row', -1)">－行</button>
               <button class="note-mini-btn" onclick="modGridSize('col', 1)">＋列</button>
@@ -781,6 +805,11 @@
         </div>
         <div style="font-size:0.7rem; color:var(--text-muted); text-align:right; margin-top:6px;" id="note-grid-info">8 行 × 4 列（上限 20×20）</div>
       </div>
+
+      <!-- 底部作者署名 -->
+      <footer class="author-footer">
+        TradeFlow · Crafted by <strong>Scott</strong>
+      </footer>
     </main>
 
     <!-- 懸浮按鈕 -->
@@ -820,7 +849,7 @@
           <button type="submit" class="submit-btn" id="btn-submit-trade">儲存投資紀錄</button>
         </form>
 
-        <!-- 2. 收支 / 互轉表單 -->
+        <!-- 2. 收支 / 互轉表單（含貸款本息分離） -->
         <form id="form-cash" class="hidden" onsubmit="submitCash(event)">
           <div class="row-2">
             <div class="form-group"><label>日期</label><input type="date" id="in-cash-date" required /></div>
@@ -835,15 +864,30 @@
           </div>
           <div class="row-2">
             <div class="form-group"><label>種類</label><select id="in-cash-category" required></select></div>
-            <div class="form-group"><label id="label-cash-amount">金額 (輸入正數)</label><input type="number" step="0.01" min="0.01" id="in-cash-amount" oninput="autoCalcCrossCurrency()" required /></div>
+            <div class="form-group"><label id="label-cash-amount">總金額 (輸入正數)</label><input type="number" step="0.01" min="0.01" id="in-cash-amount" oninput="onCashTotalAmountInput()" required /></div>
           </div>
           <div class="form-group" id="group-from-acc"><label id="label-from-acc">付款 / 轉出戶口</label><select id="in-cash-from" onchange="checkTransferDetails()"></select></div>
           <div class="form-group hidden" id="group-to-acc"><label id="label-to-acc">轉入 / 還款目標戶口</label><select id="in-cash-to" onchange="checkTransferDetails()"></select></div>
+
+          <div id="group-loan-split" class="loan-split-box hidden">
+            <div style="font-size:0.74rem; font-weight:800; color:var(--loan); margin-bottom:6px;">🏦 貸款供款本息拆分（僅本金扣減貸款餘額，利息計入支出）</div>
+            <div class="row-2">
+              <div class="form-group" style="margin-bottom:0;">
+                <label>償還本金 (扣減負債)</label>
+                <input type="number" step="0.01" min="0" id="in-cash-loan-principal" oninput="syncLoanInterestFromPrincipal()" />
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label>利息支出 (計入洗費)</label>
+                <input type="number" step="0.01" min="0" id="in-cash-loan-interest" value="0" oninput="syncLoanPrincipalFromInterest()" />
+              </div>
+            </div>
+          </div>
+
           <div class="form-group hidden" id="group-cross-amount">
             <label id="label-cross-amount" style="color:var(--accent);">目標入賬金額 (可手動微調匯差)</label>
             <input type="number" step="0.01" min="0.01" id="in-cash-to-amount" />
           </div>
-          <label class="checkbox-row">
+          <label class="checkbox-row" id="row-cash-transit">
             <input type="checkbox" id="in-cash-transit" />
             <span>標記為「處理中 (In-Transit)」（需 1–2 日才正式入賬扣減信用卡欠款）</span>
           </label>
@@ -851,7 +895,7 @@
           <button type="submit" class="submit-btn" id="btn-submit-cash">儲存紀錄</button>
         </form>
 
-        <!-- 3. 戶口表單（含信用卡還款日下拉選單、貸款戶口） -->
+        <!-- 3. 戶口表單 -->
         <form id="form-account" class="hidden" onsubmit="submitAccount(event)">
           <div class="row-2">
             <div class="form-group"><label>戶口名稱</label><input type="text" id="in-acc-name" placeholder="如：渣打信用卡 / 私人貸款" required /></div>
@@ -873,7 +917,6 @@
             <div class="form-group"><label id="label-acc-init">初始可用餘額</label><input type="number" step="0.01" id="in-acc-init" value="0" required /></div>
           </div>
 
-          <!-- 信用卡專用欄位 -->
           <div id="group-credit-fields" class="hidden">
             <div class="row-2">
               <div class="form-group"><label>卡號尾 4 位數 (選填)</label><input type="text" id="in-acc-last4" maxlength="4" inputmode="numeric" placeholder="如：1234" /></div>
@@ -881,7 +924,6 @@
             </div>
           </div>
 
-          <!-- 貸款戶口專用欄位 -->
           <div id="group-loan-fields" class="hidden">
             <div class="row-2">
               <div class="form-group"><label>原始貸款總額 (計算進度用)</label><input type="number" step="0.01" min="0" id="in-acc-loan-total" placeholder="如：200000" /></div>
@@ -889,7 +931,6 @@
             </div>
           </div>
 
-          <!-- 信用卡與貸款共用：每月還款日下拉選單 (1-31) -->
           <div id="group-dueday-field" class="hidden">
             <div class="form-group">
               <label>每月還款日 (到期前 5 日主動提醒，自動防月底誤差)</label>
@@ -900,8 +941,18 @@
           <button type="submit" class="submit-btn" id="btn-submit-acc">建立戶口</button>
         </form>
 
-        <!-- 4. 設定、自訂種類、預算與備份面板 -->
+        <!-- 4. 設定、備份與還原面板 -->
         <div id="form-backup" class="hidden">
+          <div class="card" style="box-shadow:none; margin-bottom:10px; padding:12px; border-color:var(--accent);">
+            <div class="card-title" style="margin-bottom:8px; color:var(--accent);"><span>💾 資料備份與還原 (JSON / CSV)</span></div>
+            <div class="row-2" style="margin-bottom:8px;">
+              <button type="button" class="submit-btn" style="font-size:0.8rem; padding:9px; margin-top:0;" onclick="exportJSON()">📥 下載 JSON 備份</button>
+              <button type="button" class="submit-btn" style="font-size:0.8rem; padding:9px; margin-top:0; background:var(--profit);" onclick="document.getElementById('import-file-input').click()">📂 匯入 / 還原備份</button>
+            </div>
+            <input type="file" id="import-file-input" class="hidden" accept=".json,application/json" onchange="importJSON(event)" />
+            <button type="button" class="submit-btn btn-secondary" style="font-size:0.78rem; padding:7px; margin-top:0;" onclick="exportCSV()">📊 匯出 Excel CSV 報表</button>
+          </div>
+
           <div class="card" style="box-shadow:none; margin-bottom:10px; padding:12px;">
             <div class="card-title" style="margin-bottom:6px;"><span>💱 匯率設定 (基準貨幣：HKD)</span></div>
             <div style="display:flex; gap:8px; align-items:center;">
@@ -929,38 +980,38 @@
             <button type="button" class="submit-btn btn-secondary" style="padding:7px; font-size:0.8rem;" onclick="saveCategoryBudget()">設定 / 更新此類別預算</button>
           </div>
 
-          <div class="card" style="box-shadow:none; margin-bottom:10px; padding:12px;">
-            <div class="card-title" style="margin-bottom:8px;"><span>📤 匯出備份與報表</span></div>
-            <div class="row-2" style="margin-bottom:8px;">
-              <button type="button" class="submit-btn" style="font-size:0.8rem; padding:9px;" onclick="exportJSON()">下載 JSON 備份</button>
-              <button type="button" class="submit-btn btn-secondary" style="font-size:0.8rem; padding:9px;" onclick="exportCSV()">匯出 Excel CSV</button>
-            </div>
-            <input type="file" id="import-file-input" accept=".json,application/json" onchange="importJSON(event)" style="padding:6px; font-size:0.78rem;" />
-          </div>
+          <button type="button" class="submit-btn btn-danger" style="font-size:0.8rem; padding:9px;" onclick="clearAllData()">🗑️ 清空全部本機資料</button>
 
-          <div class="row-2">
-            <button type="button" class="submit-btn btn-secondary" style="font-size:0.8rem; padding:9px;" onclick="loadSampleData()">載入示範數據</button>
-            <button type="button" class="submit-btn btn-danger" style="font-size:0.8rem; padding:9px;" onclick="clearAllData()">清空全部資料</button>
+          <div style="text-align:center; margin-top:14px; font-size:0.74rem; color:var(--text-muted);">
+            TradeFlow v6.2 · 作者：<strong>Scott</strong>
           </div>
         </div>
 
         <!-- 5. 週期費用表單 -->
         <form id="form-recurring" class="hidden" onsubmit="submitRecurring(event)">
-          <div class="form-group"><label>週期項目名稱</label><input type="text" id="in-rec-name" placeholder="例如：管理費 / Spotify / 電話費" required /></div>
+          <div class="form-group"><label>週期項目名稱</label><input type="text" id="in-rec-name" placeholder="例如：管理費 / 稅貸供款 / 卡數 Autopay" required /></div>
           <div class="row-2">
-            <div class="form-group"><label>收支類型</label><select id="in-rec-mode" required><option value="expense">週期支出</option><option value="income">週期收入</option></select></div>
+            <div class="form-group">
+              <label>收支動作類型</label>
+              <select id="in-rec-mode" onchange="updateRecurringFormUI()" required>
+                <option value="expense">週期支出</option>
+                <option value="transfer">週期互轉 (自動找卡數 / 供貸款)</option>
+                <option value="income">週期收入</option>
+              </select>
+            </div>
             <div class="form-group"><label>週期頻率</label><select id="in-rec-freq" required><option value="monthly">每月一次</option><option value="weekly">每週一次</option><option value="yearly">每年一次</option></select></div>
           </div>
           <div class="row-2">
-            <div class="form-group"><label>所屬戶口</label><select id="in-rec-acc" required></select></div>
-            <div class="form-group"><label>金額 (依戶口幣種)</label><input type="number" step="0.01" min="0.01" id="in-rec-amount" required /></div>
+            <div class="form-group"><label id="label-rec-acc">所屬 / 轉出戶口</label><select id="in-rec-acc" required></select></div>
+            <div class="form-group hidden" id="group-rec-to-acc"><label>轉入目標戶口 (信用卡/貸款)</label><select id="in-rec-to-acc"></select></div>
           </div>
           <div class="row-2">
+            <div class="form-group"><label>金額 (依轉出戶口幣種)</label><input type="number" step="0.01" min="0.01" id="in-rec-amount" required /></div>
             <div class="form-group"><label>種類</label><select id="in-rec-category" required></select></div>
-            <div class="form-group"><label>下次扣款/入賬日</label><input type="date" id="in-rec-date" required /></div>
           </div>
+          <div class="form-group"><label>下次扣款 / 執行日</label><input type="date" id="in-rec-date" required /></div>
           <label class="checkbox-row info"><input type="checkbox" id="in-rec-auto" checked /><span>到期開啟 App 時自動入賬並順延至下一期</span></label>
-          <div class="form-group"><label>備註 (選填)</label><input type="text" id="in-rec-note" placeholder="自動轉賬 / 信用卡月結單" /></div>
+          <div class="form-group"><label>備註 (選填)</label><input type="text" id="in-rec-note" placeholder="銀行 Autopay 自動轉賬" /></div>
           <button type="submit" class="submit-btn" id="btn-submit-rec">儲存週期項目</button>
         </form>
 
@@ -978,16 +1029,26 @@
             <div id="manage-presets-list" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
           </div>
         </form>
+
+        <!-- 7. In-Transit 確認入賬微調金額視窗 -->
+        <form id="form-settle" class="hidden" onsubmit="submitSettleTransit(event)">
+          <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:12px;" id="settle-desc">確認款項已正式到達目標戶口，如因匯率差與估算有出入，可在此直接修改實際入賬金額。</p>
+          <div class="row-2">
+            <div class="form-group"><label>實際入賬日期</label><input type="date" id="in-settle-date" required /></div>
+            <div class="form-group"><label id="label-settle-amt">實際入賬金額</label><input type="number" step="0.01" min="0.01" id="in-settle-amt" required /></div>
+          </div>
+          <button type="submit" class="submit-btn" style="background:var(--profit);">✓ 確認正式入賬</button>
+        </form>
       </div>
     </div>
   </div>
 
   <script>
-    const STORAGE_KEY = 'tradeflow_v6_1';
+    const STORAGE_KEY = 'tradeflow_v6_2';
     const THEME_KEY = 'tradeflow_theme_v6';
     const BACKUP_TS_KEY = 'tradeflow_last_backup_ts';
 
-    const DEFAULT_CATEGORIES = ['餐飲美食', '交通出行', '購物消費', '生活雜費', '家庭開支', '運動健身', '貸款還款', '出入金/轉帳', '其他收支'];
+    const DEFAULT_CATEGORIES = ['餐飲美食', '交通出行', '購物消費', '生活雜費', '家庭開支', '運動健身', '貸款還款', '貸款利息', '出入金/轉帳', '其他收支'];
     const NOTE_BG_COLORS = ['', '#fef9c3', '#dcfce7', '#dbeafe', '#fee2e2', '#f3e8ff', '#ffedd5', '#e2e8f0'];
     const NOTE_FG_COLORS = ['', '#0f172a', '#dc2626', '#059669', '#2563eb', '#d97706'];
     const LEGACY_COL_WIDTH_PX = { sm: 68, md: 108, lg: 158 };
@@ -1002,9 +1063,8 @@
         { id: 'yearly', label: '年度總結' }
       ],
       accounts: [
-        { id: 'all', label: '活躍戶口' },
-        { id: 'credit', label: '信用卡專區' },
-        { id: 'loan', label: '貸款專區' },
+        { id: 'liquid', label: '銀行與券商' },
+        { id: 'debt', label: '信用卡及貸款' },
         { id: 'archived', label: '已封存' }
       ],
       records: [
@@ -1017,10 +1077,12 @@
     };
 
     let currentMainTab = 'report';
-    let currentSubTab = { report: 'overview', accounts: 'all', records: 'bank' };
+    let currentSubTab = { report: 'overview', accounts: 'liquid', records: 'bank' };
     let privacyMode = false;
     let accountSortMode = false;
-    let assistantActionTarget = null;
+
+    let assistantReminders = [];
+    let assistantReminderIdx = 0;
 
     let activeSheetIdx = 0;
     let selectedCell = { r: 0, c: 0 };
@@ -1029,7 +1091,7 @@
     let calYear = nowDate.getFullYear();
     let calMonth = nowDate.getMonth();
 
-    let editingTradeId = null, editingCashId = null, editingAccountId = null, editingRecId = null;
+    let editingTradeId = null, editingCashId = null, editingAccountId = null, editingRecId = null, settlingFlowId = null;
 
     let state = {
       settings: { usdRate: 7.80 },
@@ -1086,7 +1148,6 @@
       sel.innerHTML = opts;
     }
 
-    // 計算距離下一個還款日還有幾天（含月底自動防呆）
     function getDaysUntilDueDay(dueDay) {
       if (!dueDay || dueDay < 1 || dueDay > 31) return null;
       const today = new Date();
@@ -1143,7 +1204,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       generateAppIcon();
       initDueDaySelect();
-      applyTheme(localStorage.getItem(THEME_KEY) || localStorage.getItem('tradeflow_theme_v5') || 'light');
+      applyTheme(localStorage.getItem(THEME_KEY) || 'light');
 
       const today = getTodayStr();
       document.getElementById('in-trade-date').value = today;
@@ -1152,9 +1213,9 @@
       loadAndMigrateState();
       if (state.accounts.length === 0) {
         state.accounts = [
-          { id: 'acc_bank_1', name: '主力儲蓄銀行', type: 'bank', currency: 'HKD', initialBalance: 50000, creditLimit: 0, dueDay: null, last4: '', statementTotal: null, statementRemaining: null, loanTotal: 0, monthlyPayment: 0, archived: false },
-          { id: 'acc_broker_1', name: '交易券商戶口', type: 'broker', currency: 'USD', initialBalance: 0, creditLimit: 0, dueDay: null, last4: '', statementTotal: null, statementRemaining: null, loanTotal: 0, monthlyPayment: 0, archived: false },
-          { id: 'acc_cc_1', name: '渣打信用卡', type: 'credit', currency: 'HKD', initialBalance: 0, creditLimit: 50000, dueDay: 20, last4: '1234', statementTotal: null, statementRemaining: null, loanTotal: 0, monthlyPayment: 0, archived: false }
+          { id: 'acc_bank_1', name: '主力儲蓄銀行', type: 'bank', currency: 'HKD', initialBalance: 0, creditLimit: 0, dueDay: null, last4: '', statementTotal: null, statementSetAt: null, loanTotal: 0, monthlyPayment: 0, archived: false },
+          { id: 'acc_broker_1', name: '交易券商戶口', type: 'broker', currency: 'USD', initialBalance: 0, creditLimit: 0, dueDay: null, last4: '', statementTotal: null, statementSetAt: null, loanTotal: 0, monthlyPayment: 0, archived: false },
+          { id: 'acc_cc_1', name: '渣打信用卡', type: 'credit', currency: 'HKD', initialBalance: 0, creditLimit: 50000, dueDay: 20, last4: '1234', statementTotal: null, statementSetAt: null, loanTotal: 0, monthlyPayment: 0, archived: false }
         ];
         saveState();
       }
@@ -1198,13 +1259,27 @@
         if (!item.active || !item.autoPost) return;
         let safety = 0;
         while (item.nextDate && item.nextDate <= today && safety < 24) {
+          const isTransfer = item.mode === 'transfer';
+          const fromAcc = isTransfer ? getAcc(item.accountId) : null;
+          const toAcc = isTransfer ? getAcc(item.toAccountId) : null;
+          let toAmt = item.amount;
+          if (isTransfer && fromAcc && toAcc && fromAcc.currency !== toAcc.currency) {
+            const rate = state.settings.usdRate || 7.80;
+            toAmt = Number((fromAcc.currency === 'USD' ? item.amount * rate : item.amount / rate).toFixed(2));
+          }
           state.cashFlows.push({
             id: Date.now() + Math.floor(Math.random() * 10000) + safety,
-            date: item.nextDate, mode: item.mode, category: item.category,
-            amount: item.amount, toAmount: item.amount,
-            fromAccId: item.mode === 'expense' ? item.accountId : null,
-            toAccId: item.mode === 'income' ? item.accountId : null,
+            date: item.nextDate,
+            mode: item.mode,
+            category: item.category,
+            amount: item.amount,
+            toAmount: toAmt,
+            loanPrincipal: toAcc && toAcc.type === 'loan' ? toAmt : undefined,
+            loanInterest: toAcc && toAcc.type === 'loan' ? 0 : undefined,
+            fromAccId: (item.mode === 'expense' || isTransfer) ? item.accountId : null,
+            toAccId: item.mode === 'income' ? item.accountId : (isTransfer ? item.toAccountId : null),
             status: 'SETTLED',
+            settledAt: Date.now(),
             note: `[週期] ${item.name}${item.note ? ' · ' + item.note : ''}`
           });
           item.nextDate = addPeriod(item.nextDate, item.frequency);
@@ -1215,14 +1290,16 @@
     }
 
     function loadAndMigrateState() {
-      const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('tradeflow_v6') || localStorage.getItem('tradeflow_v5') || localStorage.getItem('tradeflow_v4');
+      const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('tradeflow_v6_1') || localStorage.getItem('tradeflow_v6') || localStorage.getItem('tradeflow_v5');
       if (raw) {
         try {
           const parsed = JSON.parse(raw);
           if (parsed && Array.isArray(parsed.accounts)) {
             state.settings = parsed.settings || { usdRate: 7.80 };
             state.categories = Array.isArray(parsed.categories) && parsed.categories.length ? parsed.categories : [...DEFAULT_CATEGORIES];
-            if (!state.categories.includes('貸款還款')) state.categories.splice(Math.max(0, state.categories.length - 2), 0, '貸款還款');
+            ['貸款還款', '貸款利息'].forEach(cat => {
+              if (!state.categories.includes(cat)) state.categories.splice(Math.max(0, state.categories.length - 2), 0, cat);
+            });
             state.budgets = parsed.budgets || {};
             state.presets = parsed.presets || [];
             state.accounts = parsed.accounts.map(a => ({
@@ -1232,7 +1309,7 @@
               dueDay: parseLegacyDueDay(a),
               last4: a.last4 || '',
               statementTotal: a.statementTotal !== undefined ? a.statementTotal : null,
-              statementRemaining: a.statementRemaining !== undefined ? a.statementRemaining : null,
+              statementSetAt: a.statementSetAt !== undefined ? a.statementSetAt : (a.statementTotal !== null && a.statementTotal !== undefined ? 0 : null),
               loanTotal: Number(a.loanTotal) || 0,
               monthlyPayment: Number(a.monthlyPayment) || 0
             }));
@@ -1260,98 +1337,32 @@
       return acc.name;
     }
 
-    // ==================== 主動式財務助理橫幅（含信用卡/貸款還款日聯動） ====================
-    function updateAssistantBanner(statsMap) {
-      const banner = document.getElementById('assistant-banner');
-      const textEl = document.getElementById('assistant-banner-text');
-      const todayMs = new Date(getTodayStr() + 'T00:00:00').getTime();
-
-      // 1. 信用卡還款日提醒（剩餘 0–5 天，且本期結單未清 或 未錄入結單但有欠款）
-      const dueCards = [];
-      state.accounts.filter(a => a.type === 'credit' && !a.archived && a.dueDay).forEach(a => {
-        const days = getDaysUntilDueDay(a.dueDay);
-        if (days === null || days > 5) return;
-        const st = statsMap[a.id];
-        const currentDebt = st && st.settledBalance < 0 ? Math.abs(st.settledBalance) : 0;
-        const hasStmt = a.statementTotal !== null && a.statementTotal !== undefined;
-        // 若已錄入結單且剩餘應繳為 0 -> 本期結單已清，不提醒！
-        if (hasStmt && (a.statementRemaining || 0) <= 0) return;
-        const dueAmt = hasStmt ? a.statementRemaining : currentDebt;
-        if (dueAmt > 0) dueCards.push({ acc: a, days, dueAmt });
+    function getCreditStatementRemaining(acc) {
+      if (!acc || acc.type !== 'credit' || acc.statementTotal === null || acc.statementTotal === undefined) return null;
+      const anchorTs = acc.statementSetAt || 0;
+      let paidOrRefundedAfterAnchor = 0;
+      state.cashFlows.forEach(cf => {
+        if (cf.toAccId === acc.id && cf.status === 'SETTLED') {
+          const eventTs = cf.settledAt || cf.id || 0;
+          if (eventTs >= anchorTs) {
+            paidOrRefundedAfterAnchor += (cf.toAmount !== undefined ? cf.toAmount : cf.amount);
+          }
+        }
       });
-      if (dueCards.length > 0) {
-        dueCards.sort((a, b) => a.days - b.days);
-        const top = dueCards[0];
-        const dayText = top.days === 0 ? '今日到期找數' : `將於 ${top.days} 日後到期找數`;
-        textEl.textContent = `🔔 ${getAccDisplayName(top.acc)} ${dayText}（應繳 ${fmt(top.dueAmt, top.acc.currency)}）`;
-        assistantActionTarget = { main: 'accounts', sub: 'credit' };
-        banner.classList.remove('hidden');
-        return;
-      }
-
-      // 2. 貸款還款日提醒（剩餘 0–5 天且仍有欠款）
-      const dueLoans = [];
-      state.accounts.filter(a => a.type === 'loan' && !a.archived && a.dueDay).forEach(a => {
-        const days = getDaysUntilDueDay(a.dueDay);
-        if (days === null || days > 5) return;
-        const st = statsMap[a.id];
-        const loanDebt = st && st.settledBalance < 0 ? Math.abs(st.settledBalance) : 0;
-        if (loanDebt > 0) dueLoans.push({ acc: a, days, loanDebt });
-      });
-      if (dueLoans.length > 0) {
-        dueLoans.sort((a, b) => a.days - b.days);
-        const top = dueLoans[0];
-        const dayText = top.days === 0 ? '今日到期還款' : `將於 ${top.days} 日後到期還款`;
-        textEl.textContent = `🔔 貸款「${top.acc.name}」${dayText}`;
-        assistantActionTarget = { main: 'accounts', sub: 'loan' };
-        banner.classList.remove('hidden');
-        return;
-      }
-
-      // 3. 逾時未入賬 In-Transit 退款
-      const overdueTransit = state.cashFlows.filter(c => {
-        if (c.status !== 'IN_TRANSIT') return false;
-        return (todayMs - new Date(c.date + 'T00:00:00').getTime()) / (1000 * 60 * 60 * 24) >= 2;
-      });
-      if (overdueTransit.length > 0) {
-        textEl.textContent = `🔔 助理提醒：有 ${overdueTransit.length} 筆 In-Transit 退款已逾 2 日，請確認是否已入賬`;
-        assistantActionTarget = { main: 'records', sub: 'credit' };
-        banner.classList.remove('hidden');
-        return;
-      }
-
-      // 4. 未來 5 日週期費用
-      const upcomingRec = state.recurring.filter(r => {
-        if (!r.active) return false;
-        const diffDays = (new Date(r.nextDate + 'T00:00:00').getTime() - todayMs) / (1000 * 60 * 60 * 24);
-        return diffDays >= 0 && diffDays <= 5;
-      });
-      if (upcomingRec.length > 0) {
-        textEl.textContent = `🔔 助理提醒：未來 5 日內有 ${upcomingRec.length} 筆週期費用即將扣款（${upcomingRec[0].name} 等）`;
-        assistantActionTarget = { main: 'records', sub: 'recurring' };
-        banner.classList.remove('hidden');
-        return;
-      }
-      banner.classList.add('hidden');
+      return Number(Math.max(0, acc.statementTotal - paidOrRefundedAfterAnchor).toFixed(2));
     }
 
-    function handleAssistantAction() {
-      if (!assistantActionTarget) return;
-      currentSubTab[assistantActionTarget.main] = assistantActionTarget.sub;
-      switchMainTab(assistantActionTarget.main);
-    }
-
-    // ==================== 信用卡月結單手動錨定與自動扣減 ====================
     function recordCreditStatement(ccId) {
       const acc = getAcc(ccId);
       if (!acc) return;
-      const curVal = acc.statementTotal !== null && acc.statementTotal !== undefined ? acc.statementRemaining : '';
-      const input = prompt(`📝 錄入「${getAccDisplayName(acc)}」本期銀行月結單應繳金額 (${acc.currency})：\n（輸入 0 代表本期已清；留空取消）`, curVal);
+      const curRem = getCreditStatementRemaining(acc);
+      const curVal = curRem !== null ? curRem : '';
+      const input = prompt(`📝 錄入「${getAccDisplayName(acc)}」本期銀行月結單應繳金額 (${acc.currency})：\n（輸入 0 代表本期已清；系統將以此刻為基準自動扣減後續還款與入賬退款）`, curVal);
       if (input === null || input.trim() === '') return;
       const amt = parseFloat(input);
       if (isNaN(amt) || amt < 0) { alert('請輸入有效的正數或 0。'); return; }
       acc.statementTotal = Number(amt.toFixed(2));
-      acc.statementRemaining = Number(amt.toFixed(2));
+      acc.statementSetAt = Date.now();
       saveState();
       refreshAll();
     }
@@ -1361,17 +1372,104 @@
       if (!acc) return;
       if (!confirm(`清除「${getAccDisplayName(acc)}」的本期結單錨定紀錄？`)) return;
       acc.statementTotal = null;
-      acc.statementRemaining = null;
+      acc.statementSetAt = null;
       saveState();
       refreshAll();
     }
 
-    function deductCreditStatementIfApplicable(toAccId, settledAmt) {
-      const toAcc = getAcc(toAccId);
-      if (!toAcc || toAcc.type !== 'credit') return;
-      if (toAcc.statementTotal !== null && toAcc.statementTotal !== undefined && toAcc.statementRemaining > 0) {
-        toAcc.statementRemaining = Number(Math.max(0, toAcc.statementRemaining - settledAmt).toFixed(2));
+    function buildAssistantReminders(statsMap) {
+      const list = [];
+      const todayMs = new Date(getTodayStr() + 'T00:00:00').getTime();
+
+      state.accounts.filter(a => a.type === 'credit' && !a.archived && a.dueDay).forEach(a => {
+        const days = getDaysUntilDueDay(a.dueDay);
+        if (days === null || days > 5) return;
+        const st = statsMap[a.id];
+        const currentDebt = st && st.settledBalance < 0 ? Math.abs(st.settledBalance) : 0;
+        const stmtRem = getCreditStatementRemaining(a);
+        if (stmtRem !== null && stmtRem <= 0) return;
+        const dueAmt = stmtRem !== null ? stmtRem : currentDebt;
+        if (dueAmt > 0) {
+          const dayText = days === 0 ? '今日到期找數' : `將於 ${days} 日後到期找數`;
+          list.push({
+            priority: days,
+            text: `${getAccDisplayName(a)} ${dayText}（應繳 ${fmt(dueAmt, a.currency)}）`,
+            target: { main: 'accounts', sub: 'debt' }
+          });
+        }
+      });
+
+      state.accounts.filter(a => a.type === 'loan' && !a.archived && a.dueDay).forEach(a => {
+        const days = getDaysUntilDueDay(a.dueDay);
+        if (days === null || days > 5) return;
+        const st = statsMap[a.id];
+        const loanDebt = st && st.settledBalance < 0 ? Math.abs(st.settledBalance) : 0;
+        if (loanDebt > 0) {
+          const dayText = days === 0 ? '今日到期還款' : `將於 ${days} 日後到期還款`;
+          list.push({
+            priority: days,
+            text: `貸款「${a.name}」${dayText}`,
+            target: { main: 'accounts', sub: 'debt' }
+          });
+        }
+      });
+
+      const overdueTransit = state.cashFlows.filter(c => {
+        if (c.status !== 'IN_TRANSIT') return false;
+        return (todayMs - new Date(c.date + 'T00:00:00').getTime()) / (1000 * 60 * 60 * 24) >= 2;
+      });
+      if (overdueTransit.length > 0) {
+        list.push({
+          priority: 10,
+          text: `有 ${overdueTransit.length} 筆 In-Transit 退款已逾 2 日，請確認是否已入賬`,
+          target: { main: 'records', sub: 'credit' }
+        });
       }
+
+      const upcomingRec = state.recurring.filter(r => {
+        if (!r.active) return false;
+        const diffDays = (new Date(r.nextDate + 'T00:00:00').getTime() - todayMs) / (1000 * 60 * 60 * 24);
+        return diffDays >= 0 && diffDays <= 5;
+      });
+      if (upcomingRec.length > 0) {
+        list.push({
+          priority: 15,
+          text: `未來 5 日內有 ${upcomingRec.length} 筆週期項目即將執行（${upcomingRec[0].name}）`,
+          target: { main: 'records', sub: 'recurring' }
+        });
+      }
+
+      list.sort((a, b) => a.priority - b.priority);
+      return list;
+    }
+
+    function updateAssistantBanner(statsMap) {
+      assistantReminders = buildAssistantReminders(statsMap);
+      const banner = document.getElementById('assistant-banner');
+      if (assistantReminders.length === 0) {
+        banner.classList.add('hidden');
+        return;
+      }
+      if (assistantReminderIdx >= assistantReminders.length) assistantReminderIdx = 0;
+      const cur = assistantReminders[assistantReminderIdx];
+      const prefix = assistantReminders.length > 1 ? `🔔 (${assistantReminderIdx + 1}/${assistantReminders.length}) ` : '🔔 ';
+      document.getElementById('assistant-banner-text').textContent = prefix + cur.text;
+      document.getElementById('assistant-next-btn').classList.toggle('hidden', assistantReminders.length <= 1);
+      banner.classList.remove('hidden');
+    }
+
+    function cycleAssistantReminder() {
+      if (assistantReminders.length <= 1) return;
+      assistantReminderIdx = (assistantReminderIdx + 1) % assistantReminders.length;
+      const cur = assistantReminders[assistantReminderIdx];
+      document.getElementById('assistant-banner-text').textContent = `🔔 (${assistantReminderIdx + 1}/${assistantReminders.length}) ` + cur.text;
+    }
+
+    function handleAssistantAction() {
+      const cur = assistantReminders[assistantReminderIdx];
+      if (!cur) return;
+      currentSubTab[cur.target.main] = cur.target.sub;
+      switchMainTab(cur.target.main);
     }
 
     function checkBackupReminder() {
@@ -1478,7 +1576,6 @@
       }
     }
 
-    // ==================== 20x20 網格記事本（自定義欄寬 px） ====================
     function initNotePalettes() {
       document.getElementById('note-bg-palette').innerHTML = NOTE_BG_COLORS.map(c => `
         <button type="button" class="color-dot" style="background:${c || 'transparent'};" onclick="setCellBg('${c}')" title="${c ? '背景色' : '清除底色'}">${c ? '' : '✕'}</button>
@@ -1563,7 +1660,7 @@
         document.getElementById(`btn-fs-${sz}`).classList.toggle('active', (cell.fs || 'md') === sz);
       });
       const cwInput = document.getElementById('note-col-width-input');
-      if (cwInput) cwInput.value = cw;
+      if (cwInput && document.activeElement !== cwInput) cwInput.value = cw;
     }
 
     function setCellBg(color) {
@@ -1584,11 +1681,28 @@
       saveState(); renderNoteGrid();
     }
 
+    function previewCustomColWidth(val) {
+      const n = parseInt(val, 10);
+      if (isNaN(n) || n < 30 || n > 500) return;
+      const th = document.getElementById(`note-col-th-${selectedCell.c}`);
+      if (th) {
+        th.style.width = `${n}px`;
+        th.innerHTML = `${colIndexToLetter(selectedCell.c)} <span style="font-weight:500; opacity:0.65;">(${n})</span>`;
+      }
+    }
+
     function setCustomColWidth(val) {
       const sheet = getCurrentSheet();
       const px = normalizeColWidth(val);
       sheet.colWidths[selectedCell.c] = px;
       document.getElementById('note-col-width-input').value = px;
+      saveState(); renderNoteGrid();
+    }
+
+    function applyWidthToAllCols() {
+      const sheet = getCurrentSheet();
+      const px = normalizeColWidth(document.getElementById('note-col-width-input').value);
+      for (let c = 0; c < sheet.cols; c++) sheet.colWidths[c] = px;
       saveState(); renderNoteGrid();
     }
 
@@ -1608,7 +1722,7 @@
       let html = '<thead><tr><th style="width:28px;">#</th>';
       for (let c = 0; c < sheet.cols; c++) {
         const w = normalizeColWidth(sheet.colWidths[c]);
-        html += `<th style="width:${w}px;">${colIndexToLetter(c)} <span style="font-weight:500; opacity:0.65;">(${w})</span></th>`;
+        html += `<th id="note-col-th-${c}" style="width:${w}px;">${colIndexToLetter(c)} <span style="font-weight:500; opacity:0.65;">(${w})</span></th>`;
       }
       html += '</tr></thead><tbody>';
 
@@ -1632,28 +1746,37 @@
       }
       html += '</tbody>';
       table.innerHTML = html;
-      document.getElementById('note-grid-info').textContent = `${sheet.rows} 行 × ${sheet.cols} 列（上限 20×20 · 點選格子後可手打欄寬）`;
+      document.getElementById('note-grid-info').textContent = `${sheet.rows} 行 × ${sheet.cols} 列（上限 20×20）`;
       updateNoteToolbarActiveState();
     }
 
-    // ==================== 戶口自由拖拉與排序 ====================
     function toggleAccountSortMode() {
       accountSortMode = !accountSortMode;
-      const btn = document.getElementById('btn-sort-accounts');
-      btn.textContent = accountSortMode ? '✓ 完成排序' : '↕️ 排序';
-      btn.style.background = accountSortMode ? 'var(--profit)' : '';
-      btn.style.color = accountSortMode ? '#fff' : '';
+      ['btn-sort-liquid', 'btn-sort-debt'].forEach(btnId => {
+        const btn = document.getElementById(btnId);
+        if (btn) {
+          btn.textContent = accountSortMode ? '✓ 完成排序' : '↕️ 排序';
+          btn.style.background = accountSortMode ? 'var(--profit)' : '';
+          btn.style.color = accountSortMode ? '#fff' : '';
+        }
+      });
       renderAccountCards(computeAccountStats());
     }
 
     function moveAccountOrder(accId, direction) {
-      const activeIds = state.accounts.filter(a => !a.archived).map(a => a.id);
-      const pos = activeIds.indexOf(accId);
-      const targetPos = pos + direction;
-      if (pos === -1 || targetPos < 0 || targetPos >= activeIds.length) return;
+      const targetAcc = getAcc(accId);
+      if (!targetAcc) return;
+      const isDebtGroup = targetAcc.type === 'credit' || targetAcc.type === 'loan';
+      const groupIds = state.accounts
+        .filter(a => !a.archived && ((a.type === 'credit' || a.type === 'loan') === isDebtGroup))
+        .map(a => a.id);
 
-      const idxA = state.accounts.findIndex(a => a.id === activeIds[pos]);
-      const idxB = state.accounts.findIndex(a => a.id === activeIds[targetPos]);
+      const pos = groupIds.indexOf(accId);
+      const targetPos = pos + direction;
+      if (pos === -1 || targetPos < 0 || targetPos >= groupIds.length) return;
+
+      const idxA = state.accounts.findIndex(a => a.id === groupIds[pos]);
+      const idxB = state.accounts.findIndex(a => a.id === groupIds[targetPos]);
       [state.accounts[idxA], state.accounts[idxB]] = [state.accounts[idxB], state.accounts[idxA]];
       saveState();
       refreshAll();
@@ -1669,7 +1792,8 @@
       if (!touchDragAccId) return;
       e.preventDefault();
       const touchY = e.touches[0].clientY;
-      const cards = Array.from(document.querySelectorAll('#accounts-all-container .account-card'));
+      const containerId = currentSubTab.accounts === 'debt' ? 'accounts-debt-container' : 'accounts-liquid-container';
+      const cards = Array.from(document.querySelectorAll(`#${containerId} .account-card`));
       for (const c of cards) {
         const otherId = c.dataset.accId;
         if (!otherId || otherId === touchDragAccId) continue;
@@ -1696,9 +1820,8 @@
       refreshAll();
     }
 
-    // ==================== Modal 與表單控制 ====================
     function hideAllModalForms() {
-      ['trade', 'cash', 'account', 'backup', 'recurring', 'preset'].forEach(id => {
+      ['trade', 'cash', 'account', 'backup', 'recurring', 'preset', 'settle'].forEach(id => {
         document.getElementById(`form-${id}`).classList.add('hidden');
       });
     }
@@ -1730,6 +1853,50 @@
       document.getElementById('modal-backdrop').classList.add('open');
     }
 
+    function openSettleModal(flowId) {
+      const cf = state.cashFlows.find(c => c.id === flowId);
+      if (!cf) return;
+      settlingFlowId = flowId;
+      const toAcc = getAcc(cf.toAccId);
+      const curr = toAcc ? toAcc.currency : 'HKD';
+      const origAmt = cf.toAmount !== undefined ? cf.toAmount : cf.amount;
+
+      hideAllModalForms();
+      document.getElementById('modal-sheet-tabs').classList.add('hidden');
+      document.getElementById('modal-title').textContent = '✅ 確認 In-Transit 款項正式入賬';
+      document.getElementById('settle-desc').textContent = `目標戶口：${getAccDisplayName(toAcc)}（原估算 ${fmt(origAmt, curr)}）。若銀行實際入賬金額有匯差，可直接修改：`;
+      document.getElementById('in-settle-date').value = getTodayStr();
+      document.getElementById('label-settle-amt').textContent = `實際入賬金額 (${curr})`;
+      document.getElementById('in-settle-amt').value = origAmt;
+      document.getElementById('form-settle').classList.remove('hidden');
+      document.getElementById('modal-backdrop').classList.add('open');
+    }
+
+    function submitSettleTransit(e) {
+      e.preventDefault();
+      const cf = state.cashFlows.find(c => c.id === settlingFlowId);
+      if (!cf) return;
+      const actualAmt = Math.abs(parseFloat(document.getElementById('in-settle-amt').value) || 0);
+      if (actualAmt <= 0) return;
+
+      const fromAcc = cf.fromAccId ? getAcc(cf.fromAccId) : null;
+      const toAcc = cf.toAccId ? getAcc(cf.toAccId) : null;
+      cf.date = document.getElementById('in-settle-date').value;
+      cf.toAmount = actualAmt;
+      if (!fromAcc || !toAcc || fromAcc.currency === toAcc.currency) {
+        cf.amount = actualAmt;
+      }
+      if (toAcc && toAcc.type === 'loan') {
+        cf.loanPrincipal = actualAmt;
+        cf.loanInterest = 0;
+      }
+      cf.status = 'SETTLED';
+      cf.settledAt = Date.now();
+      saveState();
+      closeModal();
+      refreshAll();
+    }
+
     function openRecurringModal(editId = null) {
       editingRecId = editId;
       populateAccountDropdowns();
@@ -1745,18 +1912,21 @@
         document.getElementById('btn-submit-rec').textContent = '更新週期項目';
         document.getElementById('in-rec-name').value = r.name;
         document.getElementById('in-rec-mode').value = r.mode;
+        updateRecurringFormUI();
         document.getElementById('in-rec-freq').value = r.frequency;
         document.getElementById('in-rec-acc').value = r.accountId;
+        if (r.toAccountId) document.getElementById('in-rec-to-acc').value = r.toAccountId;
         document.getElementById('in-rec-amount').value = r.amount;
         document.getElementById('in-rec-category').value = r.category;
         document.getElementById('in-rec-date').value = r.nextDate;
         document.getElementById('in-rec-auto').checked = Boolean(r.autoPost);
         document.getElementById('in-rec-note').value = r.note || '';
       } else {
-        document.getElementById('modal-title').textContent = '新增週期費用 / 收入';
+        document.getElementById('modal-title').textContent = '新增週期費用 / 自動轉賬';
         document.getElementById('btn-submit-rec').textContent = '儲存週期項目';
         document.getElementById('in-rec-name').value = '';
         document.getElementById('in-rec-mode').value = 'expense';
+        updateRecurringFormUI();
         document.getElementById('in-rec-freq').value = 'monthly';
         document.getElementById('in-rec-amount').value = '';
         document.getElementById('in-rec-date').value = getTodayStr();
@@ -1764,6 +1934,13 @@
         document.getElementById('in-rec-note').value = '';
       }
       document.getElementById('modal-backdrop').classList.add('open');
+    }
+
+    function updateRecurringFormUI() {
+      const isTransfer = document.getElementById('in-rec-mode').value === 'transfer';
+      document.getElementById('group-rec-to-acc').classList.toggle('hidden', !isTransfer);
+      document.getElementById('label-rec-acc').textContent = isTransfer ? '轉出銀行戶口' : '所屬戶口';
+      if (isTransfer) document.getElementById('in-rec-category').value = '出入金/轉帳';
     }
 
     function resetFormsToDefault() {
@@ -1783,6 +1960,8 @@
       document.getElementById('in-cash-mode').value = 'expense';
       document.getElementById('in-cash-amount').value = '';
       document.getElementById('in-cash-to-amount').value = '';
+      document.getElementById('in-cash-loan-principal').value = '';
+      document.getElementById('in-cash-loan-interest').value = '0';
       document.getElementById('in-cash-note').value = '';
       document.getElementById('in-cash-transit').checked = false;
 
@@ -1831,10 +2010,11 @@
     }
 
     function renderSettingsCategories() {
+      const protectedCats = ['出入金/轉帳', '貸款還款', '貸款利息'];
       document.getElementById('settings-cat-list').innerHTML = state.categories.map(c => `
         <span class="tag-pill" style="display:inline-flex; align-items:center; gap:5px;">
           ${c}
-          ${c !== '出入金/轉帳' && c !== '貸款還款' ? `<button type="button" style="border:none; background:none; color:var(--loss); cursor:pointer; font-weight:800;" onclick="removeCustomCategory('${c}')">×</button>` : ''}
+          ${!protectedCats.includes(c) ? `<button type="button" style="border:none; background:none; color:var(--loss); cursor:pointer; font-weight:800;" onclick="removeCustomCategory('${c}')">×</button>` : ''}
         </span>
       `).join('');
     }
@@ -1890,7 +2070,7 @@
       state.cashFlows.push({
         id: Date.now(), date: getTodayStr(), mode: 'expense', category: p.category,
         amount: p.amount, toAmount: p.amount, fromAccId: p.accountId, toAccId: null,
-        status: 'SETTLED', note: p.name
+        status: 'SETTLED', settledAt: Date.now(), note: p.name
       });
       saveState(); refreshAll();
     }
@@ -1920,7 +2100,7 @@
       const tagMap = { bank: '銀行', broker: '券商', credit: '信用卡', loan: '貸款' };
       const allOpts = activeAccs.map(a => `<option value="${a.id}">[${tagMap[a.type] || '戶口'}] ${getAccDisplayName(a)} (${a.currency})</option>`).join('');
 
-      ['in-cash-from', 'in-cash-to', 'in-rec-acc', 'in-pre-acc'].forEach(id => {
+      ['in-cash-from', 'in-cash-to', 'in-rec-acc', 'in-rec-to-acc', 'in-pre-acc'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = allOpts;
       });
@@ -1937,7 +2117,7 @@
       if (mode === 'expense') {
         gFrom.classList.remove('hidden'); gTo.classList.add('hidden');
         document.getElementById('label-from-acc').textContent = '付款 / 刷卡戶口';
-        if (!skipAuto && (catSelect.value === '出入金/轉帳' || catSelect.value === '貸款還款') && state.categories.length) catSelect.value = state.categories[0];
+        if (!skipAuto && ['出入金/轉帳', '貸款還款'].includes(catSelect.value) && state.categories.length) catSelect.value = state.categories[0];
       } else if (mode === 'transfer') {
         gFrom.classList.remove('hidden'); gTo.classList.remove('hidden');
         document.getElementById('label-from-acc').textContent = '轉出戶口';
@@ -1951,21 +2131,52 @@
       checkTransferDetails(skipAuto);
     }
 
-    function checkTransferDetails(skipAutoTransit = false) {
+    function checkTransferDetails(skipAuto = false) {
       const mode = document.getElementById('in-cash-mode').value;
       const fromAcc = getAcc(document.getElementById('in-cash-from').value);
       const toAcc = getAcc(document.getElementById('in-cash-to').value);
       const crossBox = document.getElementById('group-cross-amount');
+      const loanSplitBox = document.getElementById('group-loan-split');
+      const transitRow = document.getElementById('row-cash-transit');
 
-      if (!skipAutoTransit) {
+      const isLoanRepay = mode === 'transfer' && toAcc && toAcc.type === 'loan';
+      loanSplitBox.classList.toggle('hidden', !isLoanRepay);
+      transitRow.classList.toggle('hidden', isLoanRepay);
+
+      if (isLoanRepay && !skipAuto) {
+        document.getElementById('in-cash-category').value = state.categories.includes('貸款還款') ? '貸款還款' : '出入金/轉帳';
+        onCashTotalAmountInput();
+      }
+
+      if (!skipAuto) {
         const isBrokerToCredit = fromAcc && fromAcc.type === 'broker' && toAcc && toAcc.type === 'credit';
         document.getElementById('in-cash-transit').checked = Boolean(mode === 'transfer' && isBrokerToCredit);
       }
-      if (mode === 'transfer' && fromAcc && toAcc && fromAcc.currency !== toAcc.currency) {
+
+      if (mode === 'transfer' && fromAcc && toAcc && fromAcc.currency !== toAcc.currency && !isLoanRepay) {
         crossBox.classList.remove('hidden');
         document.getElementById('label-cross-amount').textContent = `目標入賬金額 (${toAcc.currency} · 自動換算，可微調)`;
         autoCalcCrossCurrency();
       } else crossBox.classList.add('hidden');
+    }
+
+    function onCashTotalAmountInput() {
+      autoCalcCrossCurrency();
+      const total = parseFloat(document.getElementById('in-cash-amount').value) || 0;
+      const interest = parseFloat(document.getElementById('in-cash-loan-interest').value) || 0;
+      document.getElementById('in-cash-loan-principal').value = Math.max(0, total - interest).toFixed(2);
+    }
+
+    function syncLoanInterestFromPrincipal() {
+      const total = parseFloat(document.getElementById('in-cash-amount').value) || 0;
+      const principal = parseFloat(document.getElementById('in-cash-loan-principal').value) || 0;
+      document.getElementById('in-cash-loan-interest').value = Math.max(0, total - principal).toFixed(2);
+    }
+
+    function syncLoanPrincipalFromInterest() {
+      const total = parseFloat(document.getElementById('in-cash-amount').value) || 0;
+      const interest = parseFloat(document.getElementById('in-cash-loan-interest').value) || 0;
+      document.getElementById('in-cash-loan-principal').value = Math.max(0, total - interest).toFixed(2);
     }
 
     function autoCalcCrossCurrency() {
@@ -2015,7 +2226,11 @@
       document.getElementById('in-cash-category').value = state.categories.includes('貸款還款') ? '貸款還款' : '出入金/轉帳';
       if (defaultBank) document.getElementById('in-cash-from').value = defaultBank.id;
       document.getElementById('in-cash-to').value = loanId;
-      if (suggestedAmount > 0) document.getElementById('in-cash-amount').value = suggestedAmount.toFixed(2);
+      if (suggestedAmount > 0) {
+        document.getElementById('in-cash-amount').value = suggestedAmount.toFixed(2);
+        document.getElementById('in-cash-loan-principal').value = suggestedAmount.toFixed(2);
+        document.getElementById('in-cash-loan-interest').value = '0';
+      }
       document.getElementById('in-cash-transit').checked = false;
       document.getElementById('in-cash-note').value = '每月貸款還款';
       checkTransferDetails(true);
@@ -2052,6 +2267,10 @@
       if (cf.toAccId) document.getElementById('in-cash-to').value = cf.toAccId;
       checkTransferDetails(true);
       if (cf.toAmount !== undefined) document.getElementById('in-cash-to-amount').value = cf.toAmount;
+      if (cf.loanPrincipal !== undefined) {
+        document.getElementById('in-cash-loan-principal').value = cf.loanPrincipal;
+        document.getElementById('in-cash-loan-interest').value = cf.loanInterest || 0;
+      }
       document.getElementById('in-cash-transit').checked = cf.status === 'IN_TRANSIT';
       document.getElementById('in-cash-note').value = cf.note || '';
     }
@@ -2109,30 +2328,46 @@
       const amount = Math.abs(parseFloat(document.getElementById('in-cash-amount').value) || 0);
       const fromAcc = fromAccId ? getAcc(fromAccId) : null;
       const toAcc = toAccId ? getAcc(toAccId) : null;
+
       let toAmount = amount;
-      if (mode === 'transfer' && fromAcc && toAcc && fromAcc.currency !== toAcc.currency) {
+      let loanPrincipal, loanInterest;
+
+      if (mode === 'transfer' && toAcc && toAcc.type === 'loan') {
+        loanPrincipal = Math.abs(parseFloat(document.getElementById('in-cash-loan-principal').value) || 0);
+        loanInterest = Math.abs(parseFloat(document.getElementById('in-cash-loan-interest').value) || 0);
+        if (Math.abs((loanPrincipal + loanInterest) - amount) > 0.05) {
+          alert('「償還本金 ＋ 利息支出」必須等於「總金額」！');
+          return;
+        }
+        toAmount = loanPrincipal;
+      } else if (mode === 'transfer' && fromAcc && toAcc && fromAcc.currency !== toAcc.currency) {
         toAmount = Math.abs(parseFloat(document.getElementById('in-cash-to-amount').value) || amount);
       }
 
-      const status = document.getElementById('in-cash-transit').checked ? 'IN_TRANSIT' : 'SETTLED';
+      const existing = editingCashId ? state.cashFlows.find(x => x.id === editingCashId) : null;
+      const status = (toAcc && toAcc.type === 'loan') ? 'SETTLED' : (document.getElementById('in-cash-transit').checked ? 'IN_TRANSIT' : 'SETTLED');
+      const settledAt = status === 'SETTLED' ? (existing && existing.settledAt ? existing.settledAt : Date.now()) : null;
+
       const payload = {
         id: editingCashId || Date.now(),
         date: document.getElementById('in-cash-date').value,
-        mode, category: document.getElementById('in-cash-category').value,
-        amount, toAmount, fromAccId, toAccId, status,
+        mode,
+        category: document.getElementById('in-cash-category').value,
+        amount,
+        toAmount,
+        loanPrincipal,
+        loanInterest,
+        fromAccId,
+        toAccId,
+        status,
+        settledAt,
         note: document.getElementById('in-cash-note').value.trim()
       };
 
       if (editingCashId) {
         const idx = state.cashFlows.findIndex(x => x.id === editingCashId);
         if (idx !== -1) state.cashFlows[idx] = payload;
-      } else {
-        state.cashFlows.push(payload);
-        // 新增已入賬的信用卡還款或退款時，自動扣減本期月結單應繳
-        if (status === 'SETTLED' && toAccId) {
-          deductCreditStatementIfApplicable(toAccId, toAmount);
-        }
-      }
+      } else state.cashFlows.push(payload);
       saveState(); closeModal(); refreshAll();
     }
 
@@ -2155,7 +2390,7 @@
         creditLimit: type === 'credit' ? Math.abs(parseFloat(document.getElementById('in-acc-limit').value) || 0) : 0,
         dueDay: (type === 'credit' || type === 'loan') ? dueDay : null,
         statementTotal: existing && type === 'credit' ? existing.statementTotal : null,
-        statementRemaining: existing && type === 'credit' ? existing.statementRemaining : null,
+        statementSetAt: existing && type === 'credit' ? existing.statementSetAt : null,
         loanTotal: type === 'loan' ? Math.abs(parseFloat(document.getElementById('in-acc-loan-total').value) || 0) : 0,
         monthlyPayment: type === 'loan' ? Math.abs(parseFloat(document.getElementById('in-acc-monthly-pay').value) || 0) : 0,
         archived: existing ? existing.archived : false
@@ -2170,13 +2405,19 @@
 
     function submitRecurring(e) {
       e.preventDefault();
+      const mode = document.getElementById('in-rec-mode').value;
+      const accountId = document.getElementById('in-rec-acc').value;
+      const toAccountId = mode === 'transfer' ? document.getElementById('in-rec-to-acc').value : null;
+      if (mode === 'transfer' && accountId === toAccountId) { alert('轉出與目標戶口不能相同！'); return; }
+
       const existing = editingRecId ? state.recurring.find(x => x.id === editingRecId) : null;
       const payload = {
         id: editingRecId || Date.now(),
         name: document.getElementById('in-rec-name').value.trim(),
-        mode: document.getElementById('in-rec-mode').value,
+        mode,
         frequency: document.getElementById('in-rec-freq').value,
-        accountId: document.getElementById('in-rec-acc').value,
+        accountId,
+        toAccountId,
         amount: Math.abs(parseFloat(document.getElementById('in-rec-amount').value) || 0),
         category: document.getElementById('in-rec-category').value,
         nextDate: document.getElementById('in-rec-date').value,
@@ -2193,13 +2434,18 @@
 
     function postRecurringNow(id) {
       const item = state.recurring.find(x => x.id === id);
-      if (!item || !confirm(`確定將「${item.name}」立即入賬並推進至下一期？`)) return;
+      if (!item || !confirm(`確定將「${item.name}」立即執行一次並推進至下一期？`)) return;
+      const isTransfer = item.mode === 'transfer';
+      const toAcc = isTransfer ? getAcc(item.toAccountId) : null;
       state.cashFlows.push({
         id: Date.now(), date: getTodayStr(), mode: item.mode, category: item.category,
         amount: item.amount, toAmount: item.amount,
-        fromAccId: item.mode === 'expense' ? item.accountId : null,
-        toAccId: item.mode === 'income' ? item.accountId : null,
-        status: 'SETTLED', note: `[週期] ${item.name}${item.note ? ' · ' + item.note : ''}`
+        loanPrincipal: toAcc && toAcc.type === 'loan' ? item.amount : undefined,
+        loanInterest: toAcc && toAcc.type === 'loan' ? 0 : undefined,
+        fromAccId: (item.mode === 'expense' || isTransfer) ? item.accountId : null,
+        toAccId: item.mode === 'income' ? item.accountId : (isTransfer ? item.toAccountId : null),
+        status: 'SETTLED', settledAt: Date.now(),
+        note: `[週期] ${item.name}${item.note ? ' · ' + item.note : ''}`
       });
       item.nextDate = addPeriod(item.nextDate, item.frequency);
       saveState(); refreshAll();
@@ -2211,19 +2457,6 @@
     function saveUsdRate() {
       const r = parseFloat(document.getElementById('in-usd-rate').value);
       if (r > 0) { state.settings.usdRate = r; saveState(); refreshAll(); alert(`✅ 匯率已更新為 1 USD = ${r} HKD`); }
-    }
-
-    // 確認 In-Transit 入賬時，同步自動扣減信用卡本期月結單應繳
-    function confirmSettled(flowId) {
-      const item = state.cashFlows.find(c => c.id === flowId);
-      if (item && item.status === 'IN_TRANSIT') {
-        item.status = 'SETTLED';
-        if (item.toAccId) {
-          deductCreditStatementIfApplicable(item.toAccId, item.toAmount ?? item.amount);
-        }
-        saveState();
-        refreshAll();
-      }
     }
 
     function deleteTrade(id) { if (confirm('確定刪除此筆投資紀錄？')) { state.trades = state.trades.filter(t => t.id !== id); saveState(); refreshAll(); } }
@@ -2254,6 +2487,18 @@
       if (prevY && sortedY.includes(prevY)) ySel.value = prevY;
     }
 
+    function updateBrokerFilterOptions() {
+      const brokers = state.accounts.filter(a => a.type === 'broker');
+      const opts = `<option value="ALL">全部券商戶口</option>` + brokers.map(b => `<option value="${b.id}">${b.name} (${b.currency})</option>`).join('');
+      ['pnl-broker-filter', 'equity-broker-filter'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const prev = el.value;
+        el.innerHTML = opts;
+        if (prev && (prev === 'ALL' || brokers.some(b => b.id === prev))) el.value = prev;
+      });
+    }
+
     function computeAccountStats() {
       const stats = {};
       state.accounts.forEach(a => { stats[a.id] = { account: a, settledBalance: Number(a.initialBalance) || 0, inTransitIn: 0 }; });
@@ -2261,7 +2506,9 @@
         const isSettled = cf.status !== 'IN_TRANSIT';
         if (cf.fromAccId && stats[cf.fromAccId]) stats[cf.fromAccId].settledBalance -= cf.amount;
         if (cf.toAccId && stats[cf.toAccId]) {
-          const creditAmt = cf.toAmount !== undefined ? cf.toAmount : cf.amount;
+          const creditAmt = (stats[cf.toAccId].account.type === 'loan' && cf.loanPrincipal !== undefined)
+            ? cf.loanPrincipal
+            : (cf.toAmount !== undefined ? cf.toAmount : cf.amount);
           if (isSettled) stats[cf.toAccId].settledBalance += creditAmt;
           else stats[cf.toAccId].inTransitIn += creditAmt;
         }
@@ -2273,6 +2520,7 @@
     function refreshAll() {
       populateCategoryDropdowns();
       updateMonthAndYearOptions();
+      updateBrokerFilterOptions();
       renderPresetsBar();
       document.getElementById('rate-display-hint').textContent = `匯率基準: 1 USD = ${state.settings.usdRate} HKD`;
       const statsMap = computeAccountStats();
@@ -2293,7 +2541,6 @@
       let netPnlHKD = 0, totalFeesHKD = 0, winCount = 0, lossCount = 0, grossWinHKD = 0, grossLossHKD = 0;
       let runPnl = 0, peakPnl = 0, maxDD = 0;
       let curWinStreak = 0, maxWinStreak = 0, curLossStreak = 0, maxLossStreak = 0;
-      const symbolMap = {};
 
       state.trades.forEach(t => {
         const acc = getAcc(t.accountId);
@@ -2302,11 +2549,8 @@
         const feeH = toHKD(t.fee, curr);
 
         netPnlHKD += netH; totalFeesHKD += feeH;
-        if (!symbolMap[t.symbol]) symbolMap[t.symbol] = { count: 0, wins: 0, net: 0 };
-        symbolMap[t.symbol].count++; symbolMap[t.symbol].net += netH;
-
         if (netH > 0) {
-          winCount++; grossWinHKD += netH; symbolMap[t.symbol].wins++;
+          winCount++; grossWinHKD += netH;
           curWinStreak++; curLossStreak = 0; if (curWinStreak > maxWinStreak) maxWinStreak = curWinStreak;
         } else if (netH < 0) {
           lossCount++; grossLossHKD += Math.abs(netH);
@@ -2351,12 +2595,6 @@
       document.getElementById('ov-mdd').textContent = privacyMode ? '****' : `-${fmt(maxDD, 'HKD')}`;
       document.getElementById('ov-wl-count').textContent = `${winCount} 勝 / ${lossCount} 負`;
 
-      const symBody = document.getElementById('symbol-stats-body');
-      const symEntries = Object.entries(symbolMap).sort((a, b) => b[1].net - a[1].net);
-      symBody.innerHTML = symEntries.length
-        ? symEntries.map(([sym, d]) => `<tr><td><strong>${sym}</strong></td><td>${d.count}</td><td>${((d.wins / d.count) * 100).toFixed(0)}%</td><td class="${d.net >= 0 ? 'text-profit' : 'text-loss'}"><strong>${d.net >= 0 && !privacyMode ? '+' : ''}${fmt(d.net, 'HKD')}</strong></td></tr>`).join('')
-        : `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:14px;">尚無交易紀錄</td></tr>`;
-
       renderBudgetBars();
       renderAccountCards(statsMap);
       renderRecordsSections();
@@ -2378,9 +2616,14 @@
       }
 
       const spentMap = {};
-      state.cashFlows.filter(c => c.mode === 'expense' && c.date.startsWith(curMonth)).forEach(c => {
-        const acc = getAcc(c.fromAccId);
-        spentMap[c.category] = (spentMap[c.category] || 0) + toHKD(c.amount, acc ? acc.currency : 'HKD');
+      state.cashFlows.filter(c => c.date.startsWith(curMonth)).forEach(c => {
+        if (c.mode === 'expense') {
+          const acc = getAcc(c.fromAccId);
+          spentMap[c.category] = (spentMap[c.category] || 0) + toHKD(c.amount, acc ? acc.currency : 'HKD');
+        } else if (c.mode === 'transfer' && c.loanInterest > 0) {
+          const acc = getAcc(c.fromAccId);
+          spentMap['貸款利息'] = (spentMap['貸款利息'] || 0) + toHKD(c.loanInterest, acc ? acc.currency : 'HKD');
+        }
       });
 
       box.innerHTML = budgetKeys.map(cat => {
@@ -2417,6 +2660,10 @@
         if (c.mode === 'expense') {
           const acc = getAcc(c.fromAccId);
           const v = toHKD(c.amount, acc ? acc.currency : 'HKD');
+          mExp[mIdx] += v; yrExp += v;
+        } else if (c.mode === 'transfer' && c.loanInterest > 0) {
+          const acc = getAcc(c.fromAccId);
+          const v = toHKD(c.loanInterest, acc ? acc.currency : 'HKD');
           mExp[mIdx] += v; yrExp += v;
         } else if (c.mode === 'income') {
           const acc = getAcc(c.toAccId);
@@ -2458,7 +2705,8 @@
         const acc = getAcc(item.accountId);
         const hkd = toHKD(item.amount, acc ? acc.currency : 'HKD');
         const monthlyEq = item.frequency === 'weekly' ? (hkd * 52 / 12) : (item.frequency === 'yearly' ? (hkd / 12) : hkd);
-        if (item.mode === 'expense') monthlyExpHKD += monthlyEq; else monthlyIncHKD += monthlyEq;
+        if (item.mode === 'expense') monthlyExpHKD += monthlyEq;
+        else if (item.mode === 'income') monthlyIncHKD += monthlyEq;
       });
 
       document.getElementById('rec-monthly-exp').textContent = fmt(monthlyExpHKD, 'HKD');
@@ -2475,21 +2723,27 @@
       box.innerHTML = state.recurring.map(r => {
         const acc = getAcc(r.accountId);
         const curr = acc ? acc.currency : 'HKD';
+        const isTransfer = r.mode === 'transfer';
         const isExp = r.mode === 'expense';
+        const routeText = isTransfer ? `${getAccDisplayName(acc)} ➔ ${getAccDisplayName(getAcc(r.toAccountId))}` : getAccDisplayName(acc);
+        const amtClass = isTransfer ? 'text-accent' : (isExp ? 'text-loss' : 'text-profit');
+        const amtSign = isTransfer ? '' : (isExp ? '-' : '+');
+
         return `
           <div class="list-item ${r.active ? '' : 'paused'}">
             <div class="list-left">
               <div class="list-title">
                 <span>${r.name}</span>
                 <span class="acc-tag tag-broker" style="font-size:0.64rem;">${freqLabel[r.frequency] || '每月'}</span>
+                ${isTransfer ? `<span class="acc-tag tag-loan" style="font-size:0.62rem;">自動轉賬</span>` : ''}
                 ${r.autoPost && r.active ? `<span class="settled-badge" style="font-size:0.62rem;">自動入賬</span>` : ''}
                 ${!r.active ? `<span class="acc-tag tag-credit" style="font-size:0.62rem;">已暫停</span>` : ''}
               </div>
-              <div class="list-sub">下次日期：<strong>${r.nextDate}</strong> · ${getAccDisplayName(acc)} · ${r.category}</div>
-              <div style="margin-top:6px;"><button class="post-now-btn" onclick="postRecurringNow(${r.id})">⚡ 立即入賬一次</button></div>
+              <div class="list-sub">下次日期：<strong>${r.nextDate}</strong> · ${routeText} · ${r.category}</div>
+              <div style="margin-top:6px;"><button class="post-now-btn" onclick="postRecurringNow(${r.id})">⚡ 立即執行一次</button></div>
             </div>
             <div class="list-right">
-              <div class="list-amount ${isExp ? 'text-loss' : 'text-profit'}">${isExp ? '-' : '+'}${fmt(r.amount, curr)}</div>
+              <div class="list-amount ${amtClass}">${amtSign}${fmt(r.amount, curr)}</div>
               <div class="action-links">
                 <button class="action-link" onclick="toggleRecurringActive(${r.id})">${r.active ? '暫停' : '啟用'}</button>
                 <button class="action-link" onclick="openRecurringModal(${r.id})">編輯</button>
@@ -2583,8 +2837,8 @@
             ? `<div style="font-size:0.71rem; color:var(--text-muted); margin-bottom:6px;">📅 每月 <strong>${acc.dueDay}</strong> 號還款 ${daysLeft !== null ? `（距今 ${daysLeft === 0 ? '今日到期' : daysLeft + ' 日'}）` : ''}</div>`
             : '';
 
-          const hasStmt = acc.statementTotal !== null && acc.statementTotal !== undefined;
-          const stmtRem = hasStmt ? (acc.statementRemaining || 0) : 0;
+          const stmtRem = getCreditStatementRemaining(acc);
+          const hasStmt = stmtRem !== null;
           let stmtBoxHtml = '';
           if (hasStmt) {
             if (stmtRem <= 0) {
@@ -2618,7 +2872,6 @@
               </div>`;
           }
 
-          // 一鍵還清優先帶入「本期結單剩餘應繳」
           let payoffBtnHtml = '';
           if (!acc.archived) {
             if (hasStmt && stmtRem > 0) {
@@ -2659,7 +2912,7 @@
           const repaid = Math.max(0, totalLoan - loanDebt);
           const pct = totalLoan > 0 ? Math.min(100, (repaid / totalLoan) * 100) : 0;
           const daysLeft = getDaysUntilDueDay(acc.dueDay);
-          const suggestedPay = acc.monthlyPayment > 0 ? Math.min(acc.monthlyPayment, loanDebt) : loanDebt;
+          const suggestedPay = acc.monthlyPayment > 0 ? acc.monthlyPayment : loanDebt;
 
           return `
             <div id="acc-card-${acc.id}" data-acc-id="${acc.id}" class="account-card loan ${acc.archived ? 'archived' : ''}">
@@ -2679,12 +2932,12 @@
               ${totalLoan > 0 ? `
                 <div style="margin-top:10px;">
                   <div class="budget-head" style="font-size:0.72rem; color:var(--text-muted);">
-                    <span>已還進度 ${pct.toFixed(1)}%</span>
+                    <span>已還本金進度 ${pct.toFixed(1)}%</span>
                     <span>已還 ${fmt(repaid, acc.currency)} / ${fmt(totalLoan, acc.currency)}</span>
                   </div>
                   <div class="budget-track"><div class="budget-fill" style="width:${pct}%; background:var(--loan);"></div></div>
                 </div>` : ''}
-              ${!acc.archived && loanDebt > 0 ? `<button class="payoff-btn loan-btn" onclick="quickRepayLoan('${acc.id}', ${suggestedPay})">💸 登記還款 ${suggestedPay > 0 ? '(' + fmt(suggestedPay, acc.currency) + ')' : ''}</button>` : ''}
+              ${!acc.archived && loanDebt > 0 ? `<button class="payoff-btn loan-btn" onclick="quickRepayLoan('${acc.id}', ${suggestedPay})">💸 登記還款（支援本息拆分）</button>` : ''}
             </div>`;
         } else {
           const isBroker = acc.type === 'broker';
@@ -2707,12 +2960,12 @@
       };
 
       const active = state.accounts.filter(a => !a.archived);
+      const liquid = active.filter(a => a.type === 'bank' || a.type === 'broker');
+      const debt = active.filter(a => a.type === 'credit' || a.type === 'loan');
       const archived = state.accounts.filter(a => a.archived);
-      document.getElementById('accounts-all-container').innerHTML = active.length ? active.map(a => renderCard(a, accountSortMode)).join('') : `<div class="empty-state">尚無活躍戶口</div>`;
-      const credits = active.filter(a => a.type === 'credit');
-      document.getElementById('accounts-credit-container').innerHTML = credits.length ? credits.map(a => renderCard(a, false)).join('') : `<div class="empty-state">尚無活躍信用卡</div>`;
-      const loans = active.filter(a => a.type === 'loan');
-      document.getElementById('accounts-loan-container').innerHTML = loans.length ? loans.map(a => renderCard(a, false)).join('') : `<div class="empty-state">尚無活躍貸款戶口</div>`;
+
+      document.getElementById('accounts-liquid-container').innerHTML = liquid.length ? liquid.map(a => renderCard(a, accountSortMode)).join('') : `<div class="empty-state">尚無銀行或券商戶口</div>`;
+      document.getElementById('accounts-debt-container').innerHTML = debt.length ? debt.map(a => renderCard(a, accountSortMode)).join('') : `<div class="empty-state">尚無信用卡或貸款戶口</div>`;
       document.getElementById('accounts-archived-container').innerHTML = archived.length ? archived.map(a => renderCard(a, false)).join('') : `<div class="empty-state">尚無已封存戶口</div>`;
     }
 
@@ -2739,12 +2992,20 @@
         const isTransit = cf.status === 'IN_TRANSIT';
         const buildItem = (perspective, acc) => {
           const curr = acc ? acc.currency : 'HKD';
-          let title = '', signedVal = 0, colorClass = '';
+          let title = '', signedVal = 0, colorClass = '', extraSub = '';
           if (cf.mode === 'transfer') {
             const dirTag = perspective === 'OUT' ? '[轉出]' : '[轉入]';
             title = `${dirTag} ${fromName} ➔ ${toName}`;
-            signedVal = perspective === 'OUT' ? -cf.amount : (cf.toAmount ?? cf.amount);
-            colorClass = perspective === 'OUT' ? 'text-loss' : 'text-profit';
+            if (perspective === 'OUT') {
+              signedVal = -cf.amount;
+              colorClass = 'text-loss';
+            } else {
+              signedVal = (acc && acc.type === 'loan' && cf.loanPrincipal !== undefined) ? cf.loanPrincipal : (cf.toAmount ?? cf.amount);
+              colorClass = 'text-profit';
+            }
+            if (toAcc && toAcc.type === 'loan' && cf.loanPrincipal !== undefined) {
+              extraSub = ` · 本金 ${fmt(cf.loanPrincipal, curr)} / 利息 ${fmt(cf.loanInterest || 0, curr)}`;
+            }
           } else if (cf.mode === 'expense') {
             title = `${cf.category} · ${fromName}`;
             signedVal = -cf.amount; colorClass = 'text-loss';
@@ -2754,7 +3015,7 @@
           }
 
           const statusHtml = isTransit
-            ? `<button class="settle-btn" onclick="confirmSettled(${cf.id})">⏳ 處理中 · 點擊確認入賬</button>`
+            ? `<button class="settle-btn" onclick="openSettleModal(${cf.id})">⏳ 處理中 · 點擊確認入賬</button>`
             : `<span class="settled-badge">✓ 已入賬</span>`;
 
           return {
@@ -2763,7 +3024,7 @@
               <div class="list-item">
                 <div class="list-left">
                   <div class="list-title"><span>${title}</span><span class="acc-tag tag-broker" style="font-size:0.64rem;">${cf.category}</span></div>
-                  <div class="list-sub">${cf.date}${cf.note ? ' · ' + cf.note : ''}</div>
+                  <div class="list-sub">${cf.date}${extraSub}${cf.note ? ' · ' + cf.note : ''}</div>
                   <div style="margin-top:5px;">${statusHtml}</div>
                 </div>
                 <div class="list-right">
@@ -2845,6 +3106,9 @@
       const gridColor = style.getPropertyValue('--chart-grid').trim();
       const textColor = style.getPropertyValue('--chart-text').trim();
 
+      const pnlBrokerId = document.getElementById('pnl-broker-filter') ? document.getElementById('pnl-broker-filter').value : 'ALL';
+      const eqBrokerId = document.getElementById('equity-broker-filter') ? document.getElementById('equity-broker-filter').value : 'ALL';
+
       const allDatesSet = new Set();
       state.trades.forEach(t => allDatesSet.add(t.date));
       state.cashFlows.forEach(c => allDatesSet.add(c.date));
@@ -2853,63 +3117,88 @@
       const runBal = {}, runTransit = {};
       state.accounts.forEach(a => { runBal[a.id] = Number(a.initialBalance) || 0; runTransit[a.id] = 0; });
 
-      const nwSeries = [], brokerSeries = [], purePnlSeries = [], ddSeries = [];
-      let cumPnl = 0, peakPnl = 0;
+      const nwSeries = [], brokerSeries = [];
 
       sortedDates.forEach(d => {
         state.cashFlows.filter(c => c.date === d).forEach(cf => {
           if (cf.fromAccId && runBal[cf.fromAccId] !== undefined) runBal[cf.fromAccId] -= cf.amount;
           if (cf.toAccId && runBal[cf.toAccId] !== undefined) {
-            const cAmt = cf.toAmount ?? cf.amount;
+            const cAmt = (getAcc(cf.toAccId)?.type === 'loan' && cf.loanPrincipal !== undefined)
+              ? cf.loanPrincipal
+              : (cf.toAmount ?? cf.amount);
             if (cf.status !== 'IN_TRANSIT') runBal[cf.toAccId] += cAmt;
             else runTransit[cf.toAccId] += cAmt;
           }
         });
 
-        let dayTradeHKD = 0;
         state.trades.filter(t => t.date === d).forEach(t => {
-          const acc = getAcc(t.accountId);
-          dayTradeHKD += toHKD(t.net, acc ? acc.currency : 'HKD');
           if (t.accountId && runBal[t.accountId] !== undefined) runBal[t.accountId] += t.net;
         });
 
-        cumPnl += dayTradeHKD;
-        if (cumPnl > peakPnl) peakPnl = cumPnl;
-        ddSeries.push(Number((cumPnl - peakPnl).toFixed(2)));
-
-        let dBank = 0, dBroker = 0, dDebt = 0, dTransit = 0;
+        let dBank = 0, dBroker = 0, dFilteredBroker = 0, dDebt = 0, dTransit = 0;
         state.accounts.forEach(a => {
           const b = runBal[a.id] || 0;
           dTransit += toHKD(runTransit[a.id] || 0, a.currency);
           if (a.type === 'bank') dBank += toHKD(b, a.currency);
-          else if (a.type === 'broker') dBroker += toHKD(b, a.currency);
-          else if ((a.type === 'credit' || a.type === 'loan') && b < 0) dDebt += toHKD(Math.abs(b), a.currency);
+          else if (a.type === 'broker') {
+            const bHKD = toHKD(b, a.currency);
+            dBroker += bHKD;
+            if (eqBrokerId === 'ALL' || eqBrokerId === a.id) dFilteredBroker += bHKD;
+          } else if ((a.type === 'credit' || a.type === 'loan') && b < 0) dDebt += toHKD(Math.abs(b), a.currency);
         });
 
         nwSeries.push(Number((dBank + dBroker + dTransit - dDebt).toFixed(2)));
-        brokerSeries.push(Number(dBroker.toFixed(2)));
-        purePnlSeries.push(Number(cumPnl.toFixed(2)));
+        brokerSeries.push(Number(dFilteredBroker.toFixed(2)));
       });
+
+      const filteredTrades = state.trades.filter(t => pnlBrokerId === 'ALL' || t.accountId === pnlBrokerId);
+      const tradeDatesSet = new Set(filteredTrades.map(t => t.date));
+      const sortedTradeDates = Array.from(tradeDatesSet).sort();
+
+      const purePnlSeries = [], ddSeries = [];
+      let cumPnl = 0, peakPnl = 0;
+      sortedTradeDates.forEach(d => {
+        filteredTrades.filter(t => t.date === d).forEach(t => {
+          const acc = getAcc(t.accountId);
+          cumPnl += toHKD(t.net, acc ? acc.currency : 'HKD');
+        });
+        if (cumPnl > peakPnl) peakPnl = cumPnl;
+        purePnlSeries.push(Number(cumPnl.toFixed(2)));
+        ddSeries.push(Number((cumPnl - peakPnl).toFixed(2)));
+      });
+
+      const wdSum = [0, 0, 0, 0, 0];
+      const symbolMap = {};
+      filteredTrades.forEach(t => {
+        const acc = getAcc(t.accountId);
+        const netH = toHKD(t.net, acc ? acc.currency : 'HKD');
+        const day = new Date(t.date + 'T00:00:00').getDay();
+        if (day >= 1 && day <= 5) wdSum[day - 1] += netH;
+
+        if (!symbolMap[t.symbol]) symbolMap[t.symbol] = { count: 0, wins: 0, net: 0 };
+        symbolMap[t.symbol].count++;
+        symbolMap[t.symbol].net += netH;
+        if (netH > 0) symbolMap[t.symbol].wins++;
+      });
+
+      const symBody = document.getElementById('symbol-stats-body');
+      const symEntries = Object.entries(symbolMap).sort((a, b) => b[1].net - a[1].net);
+      symBody.innerHTML = symEntries.length
+        ? symEntries.map(([sym, d]) => `<tr><td><strong>${sym}</strong></td><td>${d.count}</td><td>${((d.wins / d.count) * 100).toFixed(0)}%</td><td class="${d.net >= 0 ? 'text-profit' : 'text-loss'}"><strong>${d.net >= 0 && !privacyMode ? '+' : ''}${fmt(d.net, 'HKD')}</strong></td></tr>`).join('')
+        : `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:14px;">尚無交易紀錄</td></tr>`;
 
       const scales = {
         x: { ticks: { color: textColor, maxRotation: 0, autoSkip: true, maxTicksLimit: 6 }, grid: { display: false } },
         y: { ticks: { color: textColor, font: { size: 10 }, callback: v => privacyMode ? '**' : v }, grid: { color: gridColor } }
       };
-      const labels = sortedDates.length ? sortedDates : ['尚無數據'];
+      const allLabels = sortedDates.length ? sortedDates : ['尚無數據'];
+      const tradeLabels = sortedTradeDates.length ? sortedTradeDates : ['尚無數據'];
 
-      drawChart('netWorthCurveChart', 'line', labels, [{ data: sortedDates.length ? nwSeries : [0], borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.12)', fill: true, tension: 0.25, pointRadius: 2.5 }], scales);
-      drawChart('brokerEquityChart', 'line', labels, [{ data: sortedDates.length ? brokerSeries : [0], borderColor: '#0ea5e9', backgroundColor: 'rgba(14,165,233,0.12)', fill: true, tension: 0.25, pointRadius: 2.5 }], scales);
-      drawChart('purePnlChart', 'line', labels, [{ data: sortedDates.length ? purePnlSeries : [0], borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.12)', fill: true, tension: 0.25, pointRadius: 2.5 }], scales);
-      drawChart('drawdownChart', 'line', labels, [{ data: sortedDates.length ? ddSeries : [0], borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.18)', fill: true, tension: 0.2, pointRadius: 2 }], scales);
+      drawChart('netWorthCurveChart', 'line', allLabels, [{ data: sortedDates.length ? nwSeries : [0], borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.12)', fill: true, tension: 0.25, pointRadius: 2.5 }], scales);
+      drawChart('brokerEquityChart', 'line', allLabels, [{ data: sortedDates.length ? brokerSeries : [0], borderColor: '#0ea5e9', backgroundColor: 'rgba(14,165,233,0.12)', fill: true, tension: 0.25, pointRadius: 2.5 }], scales);
+      drawChart('purePnlChart', 'line', tradeLabels, [{ data: sortedTradeDates.length ? purePnlSeries : [0], borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.12)', fill: true, tension: 0.25, pointRadius: 2.5 }], scales);
+      drawChart('drawdownChart', 'line', tradeLabels, [{ data: sortedTradeDates.length ? ddSeries : [0], borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.18)', fill: true, tension: 0.2, pointRadius: 2 }], scales);
 
-      const wdSum = [0, 0, 0, 0, 0];
-      state.trades.forEach(t => {
-        const day = new Date(t.date + 'T00:00:00').getDay();
-        if (day >= 1 && day <= 5) {
-          const acc = getAcc(t.accountId);
-          wdSum[day - 1] += toHKD(t.net, acc ? acc.currency : 'HKD');
-        }
-      });
       drawChart('weekdayChart', 'bar', ['週一', '週二', '週三', '週四', '週五'], [{
         data: wdSum.map(v => Number(v.toFixed(2))),
         backgroundColor: wdSum.map(v => v >= 0 ? 'rgba(16,185,129,0.85)' : 'rgba(239,68,68,0.85)'),
@@ -2930,6 +3219,9 @@
         if (c.mode === 'expense') {
           const acc = getAcc(c.fromAccId);
           monthMap[m].exp += toHKD(c.amount, acc ? acc.currency : 'HKD');
+        } else if (c.mode === 'transfer' && c.loanInterest > 0) {
+          const acc = getAcc(c.fromAccId);
+          monthMap[m].exp += toHKD(c.loanInterest, acc ? acc.currency : 'HKD');
         } else if (c.mode === 'income') {
           const acc = getAcc(c.toAccId);
           monthMap[m].inc += toHKD(c.toAmount ?? c.amount, acc ? acc.currency : 'HKD');
@@ -2942,9 +3234,14 @@
       ], scales, true);
 
       const expMap = {};
-      state.cashFlows.filter(c => c.mode === 'expense').forEach(c => {
-        const acc = getAcc(c.fromAccId);
-        expMap[c.category] = (expMap[c.category] || 0) + toHKD(c.amount, acc ? acc.currency : 'HKD');
+      state.cashFlows.forEach(c => {
+        if (c.mode === 'expense') {
+          const acc = getAcc(c.fromAccId);
+          expMap[c.category] = (expMap[c.category] || 0) + toHKD(c.amount, acc ? acc.currency : 'HKD');
+        } else if (c.mode === 'transfer' && c.loanInterest > 0) {
+          const acc = getAcc(c.fromAccId);
+          expMap['貸款利息'] = (expMap['貸款利息'] || 0) + toHKD(c.loanInterest, acc ? acc.currency : 'HKD');
+        }
       });
       const pL = Object.keys(expMap), pV = Object.values(expMap);
       const ctxPie = document.getElementById('expensePieChart');
@@ -2977,22 +3274,23 @@
     }
 
     function exportJSON() {
-      const payload = { version: '6.1', exportedAt: new Date().toISOString(), data: state };
+      const payload = { version: '6.2', author: 'Scott', exportedAt: new Date().toISOString(), data: state };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = `TradeFlow_v6.1_Backup_${getTodayStr()}.json`; a.click();
+      a.href = url; a.download = `TradeFlow_v6.2_Backup_${getTodayStr()}.json`; a.click();
       URL.revokeObjectURL(url);
       localStorage.setItem(BACKUP_TS_KEY, String(Date.now()));
       checkBackupReminder();
     }
 
     function exportCSV() {
-      const lines = ['類別,日期,種類/品種,轉出戶口,轉入/所屬戶口,轉出/毛額,目標入賬,手續費,淨額,狀態,備註'];
+      const lines = ['類別,日期,種類/品種,轉出戶口,轉入/所屬戶口,轉出/毛額,目標入賬,手續費/利息,淨額/本金,狀態,備註'];
       state.cashFlows.forEach(c => {
         const f = c.fromAccId ? getAccDisplayName(getAcc(c.fromAccId)) : '-';
         const t = c.toAccId ? getAccDisplayName(getAcc(c.toAccId)) : '-';
-        lines.push([c.mode, c.date, c.category, f, t, c.amount, c.toAmount ?? c.amount, 0, c.amount, c.status, `"${(c.note || '').replace(/"/g, '""')}"`].join(','));
+        const netOrPrin = c.loanPrincipal !== undefined ? c.loanPrincipal : c.amount;
+        lines.push([c.mode, c.date, c.category, f, t, c.amount, c.toAmount ?? c.amount, c.loanInterest || 0, netOrPrin, c.status, `"${(c.note || '').replace(/"/g, '""')}"`].join(','));
       });
       state.trades.forEach(t => {
         const a = getAccDisplayName(getAcc(t.accountId));
@@ -3025,7 +3323,7 @@
               last4: a.last4 || '',
               dueDay: parseLegacyDueDay(a),
               statementTotal: a.statementTotal !== undefined ? a.statementTotal : null,
-              statementRemaining: a.statementRemaining !== undefined ? a.statementRemaining : null,
+              statementSetAt: a.statementSetAt !== undefined ? a.statementSetAt : (a.statementTotal !== null && a.statementTotal !== undefined ? 0 : null),
               loanTotal: Number(a.loanTotal) || 0,
               monthlyPayment: Number(a.monthlyPayment) || 0
             })),
@@ -3054,74 +3352,15 @@
         categories: [...DEFAULT_CATEGORIES],
         budgets: {}, presets: [],
         accounts: [
-          { id: 'acc_bank_1', name: '主力儲蓄銀行', type: 'bank', currency: 'HKD', initialBalance: 0, creditLimit: 0, dueDay: null, last4: '', statementTotal: null, statementRemaining: null, loanTotal: 0, monthlyPayment: 0, archived: false },
-          { id: 'acc_broker_1', name: '交易券商戶口', type: 'broker', currency: 'USD', initialBalance: 0, creditLimit: 0, dueDay: null, last4: '', statementTotal: null, statementRemaining: null, loanTotal: 0, monthlyPayment: 0, archived: false },
-          { id: 'acc_cc_1', name: '渣打信用卡', type: 'credit', currency: 'HKD', initialBalance: 0, creditLimit: 50000, dueDay: 20, last4: '1234', statementTotal: null, statementRemaining: null, loanTotal: 0, monthlyPayment: 0, archived: false }
+          { id: 'acc_bank_1', name: '主力儲蓄銀行', type: 'bank', currency: 'HKD', initialBalance: 0, creditLimit: 0, dueDay: null, last4: '', statementTotal: null, statementSetAt: null, loanTotal: 0, monthlyPayment: 0, archived: false },
+          { id: 'acc_broker_1', name: '交易券商戶口', type: 'broker', currency: 'USD', initialBalance: 0, creditLimit: 0, dueDay: null, last4: '', statementTotal: null, statementSetAt: null, loanTotal: 0, monthlyPayment: 0, archived: false },
+          { id: 'acc_cc_1', name: '渣打信用卡', type: 'credit', currency: 'HKD', initialBalance: 0, creditLimit: 50000, dueDay: 20, last4: '1234', statementTotal: null, statementSetAt: null, loanTotal: 0, monthlyPayment: 0, archived: false }
         ],
         trades: [], cashFlows: [], recurring: [],
         noteSheets: [createDefaultSheet('記事表 1')]
       };
       activeSheetIdx = 0;
       saveState(); refreshAll(); closeModal();
-    }
-
-    function loadSampleData() {
-      if (!confirm('載入示範數據將覆蓋現有資料，確定繼續？')) return;
-      const sampleDueDay = Math.min(28, nowDate.getDate() + 3);
-      state = {
-        settings: { usdRate: 7.80 },
-        categories: [...DEFAULT_CATEGORIES],
-        budgets: { '餐飲美食': 4000, '購物消費': 3000 },
-        presets: [
-          { id: 401, name: '午餐', accountId: 'acc_cc', amount: 68, category: '餐飲美食' },
-          { id: 402, name: '黑咖啡', accountId: 'acc_cc', amount: 35, category: '餐飲美食' }
-        ],
-        accounts: [
-          { id: 'acc_hsbc', name: '匯豐儲蓄銀行', type: 'bank', currency: 'HKD', initialBalance: 120000, creditLimit: 0, dueDay: null, last4: '', statementTotal: null, statementRemaining: null, loanTotal: 0, monthlyPayment: 0, archived: false },
-          { id: 'acc_broker', name: '主力交易券商', type: 'broker', currency: 'USD', initialBalance: 0, creditLimit: 0, dueDay: null, last4: '', statementTotal: null, statementRemaining: null, loanTotal: 0, monthlyPayment: 0, archived: false },
-          { id: 'acc_cc', name: '渣打信用卡', type: 'credit', currency: 'HKD', initialBalance: 0, creditLimit: 50000, dueDay: sampleDueDay, last4: '1234', statementTotal: 3880, statementRemaining: 3880, loanTotal: 0, monthlyPayment: 0, archived: false },
-          { id: 'acc_loan', name: '稅務貸款', type: 'loan', currency: 'HKD', initialBalance: -60000, creditLimit: 0, dueDay: 28, last4: '', statementTotal: null, statementRemaining: null, loanTotal: 100000, monthlyPayment: 8500, archived: false }
-        ],
-        cashFlows: [
-          { id: 1, date: '2026-11-02', mode: 'transfer', category: '出入金/轉帳', amount: 15600, toAmount: 2000, fromAccId: 'acc_hsbc', toAccId: 'acc_broker', status: 'SETTLED', note: '銀行轉帳入金 US$2,000' },
-          { id: 2, date: '2026-11-06', mode: 'expense', category: '餐飲美食', amount: 1280, toAmount: 1280, fromAccId: 'acc_cc', toAccId: null, status: 'SETTLED', note: '週末家庭聚餐' },
-          { id: 3, date: '2026-11-11', mode: 'expense', category: '購物消費', amount: 2600, toAmount: 2600, fromAccId: 'acc_cc', toAccId: null, status: 'SETTLED', note: '裝備添置刷卡' },
-          { id: 4, date: '2026-11-18', mode: 'transfer', category: '出入金/轉帳', amount: 300, toAmount: 2340, fromAccId: 'acc_broker', toAccId: 'acc_cc', status: 'IN_TRANSIT', note: '券商獲利出金 US$300 退款至信用卡' },
-          { id: 5, date: '2026-11-20', mode: 'transfer', category: '貸款還款', amount: 8500, toAmount: 8500, fromAccId: 'acc_hsbc', toAccId: 'acc_loan', status: 'SETTLED', note: '11 月稅貸供款' }
-        ],
-        trades: [
-          { id: 101, date: '2026-11-03', accountId: 'acc_broker', symbol: 'XAUUSD', gross: 185, fee: 7, net: 178, note: '突破箱體順勢單' },
-          { id: 102, date: '2026-11-05', accountId: 'acc_broker', symbol: 'XAUUSD', gross: -75, fee: 5, net: -80, note: '假突破嚴格止損' },
-          { id: 103, date: '2026-11-10', accountId: 'acc_broker', symbol: 'HK50F', gross: 240, fee: 10, net: 230, note: '早盤支撐反彈' },
-          { id: 104, date: '2026-11-13', accountId: 'acc_broker', symbol: 'XAUUSD', gross: -60, fee: 5, net: -65, note: '週五尾盤震盪' },
-          { id: 105, date: '2026-11-17', accountId: 'acc_broker', symbol: 'XAUUSD', gross: 360, fee: 12, net: 348, note: '單邊趨勢波段獲利' }
-        ],
-        recurring: [
-          { id: 301, name: 'Spotify 家庭計劃', mode: 'expense', frequency: 'monthly', accountId: 'acc_cc', amount: 108, category: '生活雜費', nextDate: '2026-12-01', autoPost: true, active: true, note: '信用卡自動扣款' },
-          { id: 302, name: 'Google AI Pro', mode: 'expense', frequency: 'monthly', accountId: 'acc_cc', amount: 158, category: '生活雜費', nextDate: '2026-12-05', autoPost: true, active: true, note: '雲端與AI服務' }
-        ],
-        noteSheets: [
-          {
-            id: 'sheet_sample_1',
-            name: '迎新回贈追蹤',
-            rows: 6,
-            cols: 4,
-            colWidths: [120, 100, 80, 90],
-            cells: {
-              '0_0': { t: '信用卡', bg: '#dbeafe', fg: '#0f172a', fs: 'md' },
-              '0_1': { t: '簽賬目標', bg: '#dbeafe', fg: '#0f172a', fs: 'md' },
-              '0_2': { t: '進度', bg: '#dbeafe', fg: '#0f172a', fs: 'md' },
-              '0_3': { t: '截止日', bg: '#dbeafe', fg: '#0f172a', fs: 'md' },
-              '1_0': { t: '渣打 (1234)', bg: '', fg: '', fs: 'md' },
-              '1_1': { t: '$8,000', bg: '', fg: '', fs: 'md' },
-              '1_2': { t: '已達標', bg: '#dcfce7', fg: '#059669', fs: 'md' },
-              '1_3': { t: '12/31', bg: '', fg: '', fs: 'md' }
-            }
-          }
-        ]
-      };
-      activeSheetIdx = 0;
-      saveState(); closeModal(); refreshAll();
     }
   </script>
 </body>
